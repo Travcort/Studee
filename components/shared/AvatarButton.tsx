@@ -15,10 +15,10 @@ export default function AvatarButton({ setOpen }: Readonly<{ setOpen: Dispatch<S
       <View
         style={[
           styles.avatar,
-          { backgroundColor: Colours[customTheme].text },
+          { backgroundColor: Colours[customTheme].inverseBackground },
         ]}
       >
-        <Text style={{ color: Colours[customTheme].background }}>TK</Text>
+        <Text style={{ color: Colours[customTheme].inverseText }}>A</Text>
       </View>
     </TouchableOpacity>
   );

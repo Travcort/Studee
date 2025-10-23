@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import Colours from '@/lib/Colours';
 import LottieView from 'lottie-react-native';
 import { useRef } from 'react';
-import Button from '@/components/Button';
+import Button from '@/components/shared/Button';
 import { useMyAppContext } from '@/lib/Context';
 
 export default function NotFoundScreen() {
@@ -14,6 +14,7 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={[styles.container, { backgroundColor: Colours[customTheme].background }]}>
+        <Text style={{ color: Colours[customTheme].text }}>You just got lost</Text>
         <Text style={{ color: Colours[customTheme].text }}>It's time to rethink your life's choices</Text>
         <LottieView
             autoPlay
@@ -26,8 +27,10 @@ export default function NotFoundScreen() {
             source={require('@/assets/lottie/cat-not-found.json')}
         />
 
-        <Link href="/" style={styles.link}>
-          <Button mode='contained'>I wanna go home!</Button>
+        <Link href="/" style={styles.link} asChild>
+          <Button textColor={Colours[customTheme].inverseText} buttonColor={Colours[customTheme].inverseBackground} mode='contained'>
+            I wanna go home!
+          </Button>
         </Link>
       </View>
     </>

@@ -3,8 +3,8 @@ import { useMyAppContext } from "@/lib/Context";
 import { Dispatch, SetStateAction } from "react";
 import { StyleSheet, Text, ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AvatarButton from "./AvatarButton";
-import IconButton from "./IconButton";
+import AvatarButton from "./shared/AvatarButton";
+import IconButton from "./shared/IconButton";
 
 interface PageHeaderProps {
   page: string;

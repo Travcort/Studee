@@ -1,0 +1,61 @@
+name: Build and Upload APK to GitHub Release
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    android-build:
+        name: Android Build
+        runs-on: ubuntu-latest
+        env:
+          APP_SCHEME: ${{ secrets.APP_SCHEME }}
+          PACKAGE_NAME: ${{ secrets.PACKAGE_NAME }}
+          APP_NAME: ${{ secrets.APP_NAME }}
+
+          ORG_GRADLE_JVMARGS: -Xmx4096m -XX:MaxMetaspaceSize=2048m -Dfile.encoding=UTF-8
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: 20
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Prebuild the Native Directory
+              run: npx expo prebuild --platform android --no-install --clean
+
+            - name: Cache Gradle Wrapper
+              uses: actions/cache@v3
+              with:
+                  path: ~/.gradle/wrapper
+                  key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+                  restore-keys: |
+                    ${{ runner.os }}-gradle-wrapper-
+
+            - name: Cache Gradle Dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.gradle/caches
+                  key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+                  restore-keys: |
+                    ${{ runner.os }}-gradle-caches-
+
+            - name: Make Gradlew executable
+              run: cd android && chmod +x ./gradlew
+
+            - name: Build Android Release
+              run: |
+                cd android && ./gradlew clean && ./gradlew assembleRelease -x lintVitalAnalyzeRelease -x lintVitalRelease
+                    
+            - name: Upload APK to GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                files: android/app/build/outputs/apk/release/app-release.apk
+              env:
+                GITHUB_TOKEN: ${{ secrets.STUDEE_RELEASE_PLEASE_TOKEN }}

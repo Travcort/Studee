@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 
-export const MyAppContext = createContext<{ customTheme: "light" | "dark", setOpen: Dispatch<SetStateAction<boolean>> } | null>(null);
+export const MyAppContext = createContext<{ customTheme: "light" | "dark", customBorderRadius: number, setOpen: Dispatch<SetStateAction<boolean>> } | null>(null);
 
 export const useMyAppContext = () => {
   const ctx = useContext(MyAppContext);
