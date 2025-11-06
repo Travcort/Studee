@@ -2,7 +2,12 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import * as SQLite from 'expo-sqlite';
 import { getDBConnection } from './Connection';
 import { ToastAndroid } from 'react-native';
-import { initStudentsTable, initTeachersTable } from './Operations';
+import { 
+  initSchoolsTable, initDepartmentsTable,  
+  initCoursesTable, initUnitsTable,  
+  initLecturersTable,  
+  initStudentsTable
+} from './Schema';
 
 type DatabaseContextType = {
   database: SQLite.SQLiteDatabase;
@@ -22,8 +27,12 @@ export const DatabaseProvider = ({ children }: { children: React.ReactNode }) =>
         (async () => {
           try {
             // Initialize tables
+            await initSchoolsTable(db);
+            await initDepartmentsTable(db);
+            await initCoursesTable(db);
+            await initUnitsTable(db);
+            await initLecturersTable(db);
             await initStudentsTable(db);
-            await initTeachersTable(db);
 
             setReady(true);
           } catch (error) {

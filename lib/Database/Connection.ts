@@ -6,7 +6,8 @@ const DATABASE_NAME = 'studee.db';
 
 export const getDBConnection = () => {
     if (!db) {
-        db = SQLite.openDatabaseSync(DATABASE_NAME)
+        db = SQLite.openDatabaseSync(DATABASE_NAME);
+        db.execSync("PRAGMA foreign_keys = ON;");
     }
 
     return db;
