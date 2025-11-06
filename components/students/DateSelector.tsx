@@ -5,7 +5,7 @@ import { useMyAppContext } from "@/lib/Context";
 import Colours from "@/lib/Colours";
 import { useState } from "react";
 import Button from "../shared/Button";
-import { StudentTypes } from "@/lib/Database/Operations";
+import { StudentTypes } from "@/lib/Database/Schema";
 
 type DateSelectorProps = {
     property: keyof StudentTypes;

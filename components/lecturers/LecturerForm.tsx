@@ -6,15 +6,14 @@ import { useMyAppContext } from "@/lib/Context";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import PhotoUploadInput from "../shared/PhotoUploadInput";
-// import DateSelector from "./DateSelector";
-import { editStudentDetails, newStudent, getAllStudents } from "@/lib/Database/Operations";
+import { getAllLecturers } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
-import { StudentTypes } from "@/lib/Database/Schema";
+import { LecturerTypes } from "@/lib/Database/Schema";
 import DateSelector from "../shared/DateSelector";
 
-const studentKeys: (keyof StudentTypes)[] = [
-    "regNo",
+const lecturerKeys: (keyof LecturerTypes)[] = [
+    "staffNo",
     "firstName",
     "lastName",
     "gender",
@@ -22,7 +21,7 @@ const studentKeys: (keyof StudentTypes)[] = [
     "contact",
     "email",
     "address",
-    "enrollmentDate",
+    "employmentDate",
     "photoUri",
 ];
 
@@ -42,9 +41,14 @@ type FormLabelType = {
     type: KeyboardType;
 };
 
-const formLabels: Record<keyof StudentTypes, FormLabelType> = {
-    regNo: {
-        label: 'Registration Number',
+const formLabels: Record<keyof LecturerTypes, FormLabelType> = {
+    id: {
+        label: 'ID',
+        icon: 'account-outline',
+        type: 'none'
+    },
+    staffNo: {
+        label: 'Staff Number',
         icon: 'account',
         type: 'text'
     },
@@ -83,8 +87,13 @@ const formLabels: Record<keyof StudentTypes, FormLabelType> = {
         icon: 'map-marker',
         type: 'text'
     },
-    enrollmentDate: {
-        label: 'Class',
+    employmentDate: {
+        label: 'Employed',
+        icon: 'school',
+        type: 'text'
+    },
+    departmentID: {
+        label: 'Department',
         icon: 'school',
         type: 'text'
     },
@@ -95,46 +104,46 @@ const formLabels: Record<keyof StudentTypes, FormLabelType> = {
     }
 };
 
-const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTypes, toggleModal: () => void }) => {
+const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: LecturerTypes, toggleModal: () => void }) => {
     const { customTheme, customBorderRadius } = useMyAppContext();
     const { database } = useDatabase();
-    const setStudents = StateStore(state => state.setStudents);
+    const setStateLecturers = StateStore(state => state.setLecturers);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
 
-    const initialStudentState = studentToEdit 
+    const initialLecturerState = lecturerToEdit 
     ?? {
-        regNo: '',
+        staffNo: '',
         firstName: '',
         lastName: '',
         email: '',
         contact: '',
         gender: '',
         dob: '',
-        enrollmentDate: '',
+        employmentDate: '',
         address: '',
         photoUri: ''
     };
 
-    const [student, setStudent] = useState<StudentTypes>(initialStudentState);
+    const [lecturer, setLecturer] = useState<Omit<LecturerTypes, "id" | "departmentID">>(initialLecturerState);
 
     const [activeCalendar, setActiveCalendar] = useState<string|null>(null);
     const toggleCalendarModal = (key: string) => {
         setActiveCalendar(prev => prev === key ? null : key);
     };
 
-    const handleChange = <K extends keyof StudentTypes>(key: K, value: string) => {
-        setStudent((prev) => ({ ...prev, [key]: value }));
+    const handleChange = <K extends keyof LecturerTypes>(key: K, value: string) => {
+        setLecturer((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleEnrollment = async () => {
-        const { success, message } = await (studentToEdit ? editStudentDetails(database, student) : newStudent(database, student));
+        const { success, message } = await (lecturerToEdit ? editLecturerDetails(database, lecturer) : newLecturer(database, lecturer));
         if (!success) {
             ToastAndroid.show(message, ToastAndroid.LONG);
             return;
         }
-        setStudent(initialStudentState);
-        const { response } = await getAllStudents(database);
-        if (response) setStudents(response);
+        setLecturer(initialLecturerState);
+        const { response } = await getAllLecturers(database);
+        if (response) setStateLecturers(response);
         toggleRefreshMetricsToken();
 
         toggleModal();
@@ -143,22 +152,22 @@ const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTy
 
     return (
         <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
-            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Student Enrollment</Text>
+            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Lecturer Enrollment</Text>
 
-            {studentKeys
-            .filter((e) => !e.includes("regNo"))
+            {lecturerKeys
+            .filter((e) => !e.includes("staffNo"))
             .map(key => (
                 key === 'photoUri' 
                 ? (
                     <PhotoUploadInput key={key}
-                        photoUri={student.photoUri}
+                        photoUri={lecturer.photoUri}
                         onChange={(uri) => handleChange('photoUri', uri)}
                     />
                 ) 
                 : (key === 'dob')
                 ? (
                     <DateSelector key={key} 
-                        entityToEdit={studentToEdit}
+                        entityToEdit={lecturerToEdit}
                         activeCalendar={activeCalendar} 
                         toggleCalendarModal={() => toggleCalendarModal(key)} 
                         property={key} handleChange={handleChange}
@@ -173,17 +182,17 @@ const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTy
                             style={[
                                 styles.input, 
                                 {
-                                    backgroundColor: studentToEdit && key === 'regNo' ? Colours[customTheme].placeholderText : 'none', 
+                                    backgroundColor: lecturerToEdit && key === 'staffNo' ? Colours[customTheme].placeholderText : 'none', 
                                     color: Colours[customTheme].inverseText,
                                     borderRadius: customBorderRadius
                                 }
                             ]}
                             inputMode={formLabels[key].type}
                             placeholder={formLabels[key].label}
-                            value={student[key]}
+                            value={lecturer[key]}
                             onChangeText={(text) => handleChange(key, text)}
                             placeholderTextColor={Colours[customTheme].placeholderText}
-                            editable={!(studentToEdit && key === 'regNo')}
+                            editable={!(lecturerToEdit && key === 'staffNo')}
                         />
                     </View>
                 )
@@ -192,13 +201,13 @@ const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTy
             <Button textColor={Colours[customTheme].text} buttonColor={Colours[customTheme].background} 
                 onPress={handleEnrollment}
             >
-                {studentToEdit ? 'Update Student Details' : 'Enroll Student' }
+                {lecturerToEdit ? 'Update Lecturer Details' : 'Enroll Lecturer' }
             </Button>
         </ScrollView>
     );
 }
 
-export default StudentForm;
+export default LecturerForm;
 
 const styles = StyleSheet.create({
   inputWrapper: {

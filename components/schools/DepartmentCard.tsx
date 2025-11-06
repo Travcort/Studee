@@ -1,22 +1,29 @@
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
-import { StudentTypes } from "@/lib/Database/Schema";
 import { Link } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
-export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
+type DepartmentCardProps = { 
+    id: number;
+    schoolCode: string;
+    uniqueIdentifier: string;
+    name: string;
+    head: string;
+};
+
+export default function DepartmentCard({ id, schoolCode, uniqueIdentifier, name, head }: Readonly<DepartmentCardProps>) {
     const { customTheme, customBorderRadius } = useMyAppContext();
 
     return (
         <Link
-            key={item.regNo}
-            href={`/students/${encodeURIComponent(item.regNo)}`}
+            key={id}
+            href={`/schools/${schoolCode}/departments/${encodeURIComponent(uniqueIdentifier)}?departmentID=${id}`}
             asChild
         >
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={{
-                    backgroundColor: Colours[customTheme].inverseBackground,
+                    backgroundColor: Colours[customTheme].background,
                     borderRadius: customBorderRadius,
                     margin: '1%',
                     paddingVertical: 16,
@@ -33,7 +40,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
             >
                 <View
                     style={{
-                        backgroundColor: Colours[customTheme].background ?? "#007AFF",
+                        backgroundColor: Colours[customTheme].inverseBackground,
                         width: 34,
                         height: 34,
                         borderRadius: 99,
@@ -43,34 +50,34 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                 >
                     <Text
                         style={{
-                            color: Colours[customTheme].text,
+                            color: Colours[customTheme].inverseText,
                             fontWeight: "bold",
                             fontSize: 16,
                         }}
                     >
-                        {item.firstName.charAt(0)}{item.lastName.charAt(0)}
+                        {uniqueIdentifier}
                     </Text>
                 </View>
 
                 <View style={{ flex: 1 }}>
                     <Text
                         style={{
-                        color: Colours[customTheme].inverseText,
-                        fontSize: 17,
-                        fontWeight: "600",
+                            color: Colours[customTheme].text,
+                            fontSize: 17,
+                            fontWeight: "600",
                         }}
-                        numberOfLines={1}
+                        numberOfLines={2}
                     >
-                        {item.firstName} {item.lastName}
+                        {name}
                     </Text>
                     <Text
                         style={{
-                            color: Colours[customTheme].inverseText,
+                            color: Colours[customTheme].text,
                             fontSize: 13,
                             marginTop: 3,
                         }}
                     >
-                        Reg No: {item.regNo}
+                        Head: {head}
                     </Text>
                 </View>
             </TouchableOpacity>
