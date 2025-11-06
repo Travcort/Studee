@@ -76,6 +76,11 @@ function RootLayoutNav() {
                     header: () => <PageHeader page='Dashboard' setOpen={setOpen} />
                   }} 
                 />
+                <Stack.Screen name="schools" options={{ headerShown: false }} />
+                <Stack.Screen name="lecturers" options={{ 
+                    header: () => <PageHeader page='Lecturers' setOpen={setOpen} />
+                  }} 
+                />
                 <Stack.Screen name="students" options={{ 
                     header: () => <PageHeader page='Students' setOpen={setOpen} />
                   }} 

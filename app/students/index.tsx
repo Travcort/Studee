@@ -1,15 +1,16 @@
 import CustomModal from "@/components/shared/CustomModal";
 import FloatingActionButton from "@/components/shared/Fab";
 import StudentForm from "@/components/students/StudentForm";
-import Studentcard from "@/components/students/StudentCard";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
-import { getAllStudents, StudentTypes } from "@/lib/Database/Operations";
+import { getAllStudents } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
 import { useEffect, useState} from "react";
 import { FlatList, Text, ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StudentTypes } from "@/lib/Database/Schema";
+import Personcard from "@/components/shared/PersonCard";
 
 export default function StudentsPage() {
     const { customTheme } = useMyAppContext();
@@ -39,7 +40,13 @@ export default function StudentsPage() {
                         data={students}
                         keyExtractor={({ regNo }) => regNo}
                         renderItem={({item}) => (
-                            <Studentcard item={item} />
+                            <Personcard 
+                                id={item.id} 
+                                table="students" 
+                                uniqueIdentifier={item.regNo} 
+                                firstName={item.firstName} 
+                                lastName={item.lastName} 
+                            />
                         )}
                     />
                 ) 
@@ -48,7 +55,11 @@ export default function StudentsPage() {
                 )
             }
 
-            <CustomModal modalVisible={modalVisible} toggleModal={toggleModal}>
+            <CustomModal 
+                modalVisible={modalVisible} 
+                toggleModal={toggleModal}
+                onRequestCloseOperations={() => {}}
+            >
                 <StudentForm toggleModal={toggleModal} />
             </CustomModal>
 
