@@ -5,8 +5,7 @@ import {
     LECTURERS_TABLE, LecturerTypes, NewLecturerTypes,
     COURSES_TABLE, CourseTypes, NewCourseTypes, 
     UNITS_TABLE, UnitTypes, NewUnitTypes, 
-    STUDENTS_TABLE, StudentTypes, 
-
+    STUDENTS_TABLE, StudentTypes, NewStudentTypes
 } from './Schema';
 
 export const newSchool = async (db: SQLite.SQLiteDatabase, school: NewSchoolTypes) => {
@@ -149,7 +148,7 @@ export const getDepartment = async (db: SQLite.SQLiteDatabase, departmentID: num
     }
 };
 
-export const editDepartment = async (db: SQLite.SQLiteDatabase, department: DepartmentTypes) => {
+export const editDepartmentDetails = async (db: SQLite.SQLiteDatabase, department: DepartmentTypes) => {
     try {
         await db.runAsync(`UPDATE ${DEPARTMENTS_TABLE} 
             SET name = (?), code = (?), schoolID = (?), headID = (?)
@@ -323,14 +322,14 @@ export const deleteUnit = async (db: SQLite.SQLiteDatabase, unit: UnitTypes) => 
 };
 
 // LECTURERS
-export const newLecturer = async (db: SQLite.SQLiteDatabase, lecuturer: NewLecturerTypes ) => {
+export const newLecturer = async (db: SQLite.SQLiteDatabase, lecturer: NewLecturerTypes ) => {
     try {
         await db.runAsync(`INSERT OR IGNORE INTO ${LECTURERS_TABLE} 
-            (staffNo, firstName, lastName, gender, dob, contact, email, address, photoUri, departmentID) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
-            [lecuturer.staffNo, lecuturer.firstName, lecuturer.lastName, lecuturer.gender, lecuturer.dob, lecuturer.contact, lecuturer.email, lecuturer.address, lecuturer.photoUri, lecuturer.departmentID]
+            (staffNo, fullName, gender, dob, contact, email, address, photoUri, departmentID) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
+            [lecturer.staffNo, lecturer.fullName, lecturer.gender, lecturer.dob, lecturer.contact, lecturer.email, lecturer.address, lecturer.photoUri, lecturer.departmentID]
         );
-        return { success: true, message: `Successfully enrolled lecturer ${lecuturer.firstName} ${lecuturer.lastName}` };
+        return { success: true, message: `Successfully enrolled lecturer ${lecturer.fullName}` };
     } catch (error) {
         return { 
             success: false, 
@@ -360,7 +359,6 @@ export const getAllLecturers = async (db: SQLite.SQLiteDatabase, countOnly = fal
 export const getAllDepartmentLecturers = async (db: SQLite.SQLiteDatabase, departmentID: number) => {
     try {
         const response: LecturerTypes[] = await db.getAllAsync(`SELECT * FROM ${LECTURERS_TABLE} WHERE departmentID = (?);`, departmentID);
-        console.log("Department Lecturers:", response);
         return { success: true, message: 'Successfully retrieved all department lecturers', response}
     } catch (error) {
         return { 
@@ -386,13 +384,15 @@ export const getLecturer = async (db: SQLite.SQLiteDatabase, lecturerID: number)
     }
 };
 
-export const editLecturer = async (db: SQLite.SQLiteDatabase, lecturer: LecturerTypes) => {
+export const editLecturerDetails = async (db: SQLite.SQLiteDatabase, lecturer: LecturerTypes) => {
     try {
         await db.runAsync(`UPDATE ${LECTURERS_TABLE} SET 
-            staffNo = (?), firstName = (?), lastName = (?), gender = (?), dob = (?), contact = (?), email = (?), address = (?), photoUri = (?) 
+            staffNo = (?), fullName = (?), gender = (?), dob = (?), contact = (?), email = (?), address = (?), photoUri = (?) 
             WHERE id = (?);`,
-            [lecturer.staffNo, lecturer.firstName, lecturer.lastName, lecturer.gender, lecturer.dob, lecturer.contact, lecturer.email, lecturer.address, lecturer.photoUri, lecturer.id]
+            [lecturer.staffNo, lecturer.fullName, lecturer.gender, lecturer.dob, lecturer.contact, lecturer.email, lecturer.address, lecturer.photoUri, lecturer.id]
         );
+
+        return { success: true, message: `Successfully updated ${lecturer.fullName}'s details` };
     } catch (error) {
         return { 
             success: false, 
@@ -404,7 +404,7 @@ export const editLecturer = async (db: SQLite.SQLiteDatabase, lecturer: Lecturer
 export const deleteLecturer = async (db:SQLite.SQLiteDatabase, lecturer: LecturerTypes) => {
     try {
         await db.runAsync(`DELETE FROM ${LECTURERS_TABLE} WHERE id = (?);`, lecturer.id);
-        return { success: true, message: `Successfully deleted lecturer ${lecturer.firstName} ${lecturer.lastName}` };
+        return { success: true, message: `Successfully deleted lecturer ${lecturer.fullName}` };
     } catch (error) {
         return { 
             success: false, 
@@ -415,18 +415,18 @@ export const deleteLecturer = async (db:SQLite.SQLiteDatabase, lecturer: Lecture
 
 
 // STUDENTS
-export const newStudent = async (db: SQLite.SQLiteDatabase, student: StudentTypes) => {
+export const newStudent = async (db: SQLite.SQLiteDatabase, student: NewStudentTypes) => {
     try {
-        if(!student.regNo || !student.firstName || !student.lastName) {
-            return { success: false, message: 'The Registration Number, First and Last Name are mandatory' }
+        if(!student.regNo || !student.fullName) {
+            return { success: false, message: 'The Registration Numberand Full Name are mandatory' }
         }
 
         await db.runAsync(`INSERT INTO ${STUDENTS_TABLE} 
-            (regNo, firstName, lastName, gender, dob, contact, email, address, enrollmentDate, photoUri) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
-            [student.regNo, student.firstName, student.lastName, student.gender, student.dob, student.contact, student.email, student.address, student.enrollmentDate, student.photoUri]
+            (regNo, fullName, gender, dob, contact, email, address, photoUri) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?);`, 
+            [student.regNo, student.fullName, student.gender, student.dob, student.contact, student.email, student.address, student.photoUri]
         );
-        return { success: true, message: `Successfully enrolled ${student.firstName} ${student.lastName}`}
+        return { success: true, message: `Successfully enrolled ${student.fullName}`}
     } catch (error) {
         return { 
             success: false, 
@@ -437,16 +437,16 @@ export const newStudent = async (db: SQLite.SQLiteDatabase, student: StudentType
 
 export const editStudentDetails = async (db: SQLite.SQLiteDatabase, student: StudentTypes) => {
     try {
-        if(!student.regNo || !student.firstName || !student.lastName) {
-            return { success: false, message: 'The Registration Number, First and Last Name are mandatory' }
+        if(!student.regNo || !student.fullName) {
+            return { success: false, message: 'The Registration Number and Full Name are mandatory' }
         }
         
         await db.runAsync(`UPDATE ${STUDENTS_TABLE} SET 
-            regNo = (?), firstName = (?), lastName = (?), gender = (?), dob = (?), contact = (?), email = (?), address = (?), enrollmentDate = (?), photoUri = (?) 
+            regNo = (?), fullName = (?), gender = (?), dob = (?), contact = (?), email = (?), address = (?), enrollmentDate = (?), photoUri = (?) 
             WHERE regNo = (?);`, 
-            [student.regNo, student.firstName, student.lastName, student.gender, student.dob, student.contact, student.email, student.address, student.enrollmentDate, student.photoUri, student.regNo]
+            [student.regNo, student.fullName, student.gender, student.dob, student.contact, student.email, student.address, student.enrollmentDate, student.photoUri, student.regNo]
         );
-        return { success: true, message: `Successfully updated ${student.firstName} ${student.lastName}'s details`}
+        return { success: true, message: `Successfully updated ${student.fullName}'s details`}
     } catch (error) {
         return { 
             success: false, 
@@ -459,7 +459,7 @@ export const getStudent = async (db: SQLite.SQLiteDatabase, regNo: string) => {
     try {
         const row = await db.getFirstAsync(`SELECT * FROM ${STUDENTS_TABLE} WHERE regNo = (?);`, regNo);
         const response = row as StudentTypes;
-        return { success: true, message: `Successfully retrieved ${response.firstName}`, response };
+        return { success: true, message: `Successfully retrieved ${response.fullName}`, response };
     } catch (error) {
         return { 
             success: false, 
@@ -471,7 +471,7 @@ export const getStudent = async (db: SQLite.SQLiteDatabase, regNo: string) => {
 export const deleteStudent = async (db: SQLite.SQLiteDatabase, student: StudentTypes) => {
     try {
         await db.runAsync(`DELETE FROM ${STUDENTS_TABLE} WHERE regNo = (?);`, student.regNo);
-        return { success: true, message: `Successfully unenrolled ${student.firstName} ${student.lastName}` };
+        return { success: true, message: `Successfully unenrolled ${student.fullName}` };
     } catch (error) {
         return { 
             success: false, 

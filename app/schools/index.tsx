@@ -9,8 +9,8 @@ import { useEffect, useState} from "react";
 import { FlatList, Text, ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SchoolTypes } from "@/lib/Database/Schema";
-import SchoolCard from "@/components/schools/SchoolCard";
-import SchoolForm from "@/components/schools/SchoolForm";
+import SchoolCard from "@/components/schools/Card";
+import SchoolForm from "@/components/schools/Form";
 
 export default function SchoolsPage() {
     const { customTheme } = useMyAppContext();
@@ -23,7 +23,7 @@ export default function SchoolsPage() {
         const dean = stateLecturers.find(lecturer => lecturer.id === school.deanID);
         return {
             ...school,
-            deanName: dean ? `${dean.firstName} ${dean.lastName}` : 'Vacant',
+            deanName: dean ? dean.fullName : 'Vacant',
         };
     });
 
@@ -65,10 +65,10 @@ export default function SchoolsPage() {
 
             <CustomModal 
                 modalVisible={modalVisible} 
-                toggleModal={toggleModal}
+                setModalVisible={setModalVisible}
                 onRequestCloseOperations={() => {}}
             >
-                <SchoolForm toggleModal={toggleModal} />
+                <SchoolForm setModalVisible={setModalVisible} />
             </CustomModal>
 
             <FloatingActionButton 

@@ -1,16 +1,17 @@
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
+import { Dispatch, SetStateAction } from "react";
 import { Modal, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 type CustomModalProps = {
     modalVisible: boolean;
-    toggleModal: () => void;
+    setModalVisible: Dispatch<SetStateAction<boolean>>;
     onRequestCloseOperations: () => void;
     children: React.ReactNode
 };
 
-export default function CustomModal ({ modalVisible, toggleModal, onRequestCloseOperations, children }: Readonly<CustomModalProps>) {
+export default function CustomModal ({ modalVisible, setModalVisible, onRequestCloseOperations, children }: Readonly<CustomModalProps>) {
     const { customTheme } = useMyAppContext();
 
     return (
@@ -19,7 +20,7 @@ export default function CustomModal ({ modalVisible, toggleModal, onRequestClose
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => { onRequestCloseOperations(); toggleModal()}}
+                onRequestClose={() => { onRequestCloseOperations(); setModalVisible(false); }}
             >
                 <SafeAreaView 
                     style={{ flex: 1, justifyContent: 'center', backgroundColor: Colours[customTheme].overlay }}

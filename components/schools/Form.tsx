@@ -1,22 +1,20 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { editDepartment, getAllDepartments, newDepartment } from "@/lib/Database/Operations";
+import { editSchoolDetails, getAllSchools, newSchool } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
-import { DepartmentTypes, NewDepartmentTypes } from "@/lib/Database/Schema";
+import { NewSchoolTypes, SchoolTypes } from "@/lib/Database/Schema";
 import DropdownMenu from "../shared/DropdownMenu";
 
-const departmentKeys: (keyof DepartmentTypes)[] = [
-    "id",
+const schoolKeys: (keyof NewSchoolTypes)[] = [
     "name",
     "code",
-    "schoolID",
-    "headID"
+    "deanID"
 ];
 
 type KeyboardType =
@@ -35,91 +33,85 @@ type FormLabelType = {
     type: KeyboardType;
 };
 
-const formLabels: Record<keyof DepartmentTypes, FormLabelType> = {
-    id: {
-        label: 'ID',
-        icon: 'identifier',
-        type: 'text'
-    },
+const formLabels: Record<keyof NewSchoolTypes, FormLabelType> = {
     name: {
-        label: 'Department Name',
+        label: 'School Name',
         icon: 'school',
         type: 'text'
     },
     code: {
-        label: 'Department Code',
+        label: 'School Code',
         icon: 'barcode',
         type: 'text'
     },
-    schoolID: {
-        label: 'School',
+    deanID: {
+        label: 'Dean',
         icon: 'account-tie',
-        type: 'text'
-    },
-    headID: {
-        label: 'Department Head',
-        icon: 'account-tie',
-        type: 'text'
-    },
-    started: {
-        label: 'Started',
-        icon: 'calendar-start',
         type: 'text'
     }
 };
 
-const DepartmentForm = ({ schoolID, departmentToEdit, toggleModal }: { schoolID: number, departmentToEdit?: DepartmentTypes, toggleModal: () => void }) => {
+const SchoolForm = ({ schoolToEdit, setModalVisible }: { schoolToEdit?: SchoolTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
     const { customTheme, customBorderRadius } = useMyAppContext();
     const { database } = useDatabase();
+    const setStateSchools = StateStore(state => state.setSchools);
     const stateLecturers = StateStore(state => state.lecturers);
-    const setStateDepartments = StateStore(state => state.setDepartments);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
-    const refreshSchoolDetailsToken = StateStore(state => state.refreshSchoolDetailsToken);
 
-    const initialDepartmentState = departmentToEdit 
+    const initialSchoolState = schoolToEdit 
     ?? {
         name: '',
         code: '',
-        schoolID: schoolID,
-        headID: null,
+        deanID: null,
     };
 
-    const [department, setDepartment] = useState<DepartmentTypes|NewDepartmentTypes>(initialDepartmentState);
+    const [school, setSchool] = useState<SchoolTypes|NewSchoolTypes>(initialSchoolState);
 
-    const handleChange = <K extends keyof DepartmentTypes>(key: K, value: string|number|null) => {
-        setDepartment((prev) => ({ ...prev, [key]: value }));
+    const handleChange = <K extends keyof SchoolTypes>(key: K, value: string|number|null) => {
+        setSchool((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleEnrollment = async () => {
-        const { success, message } = await (departmentToEdit ? editDepartment(database, department) : newDepartment(database, department));
+        let result;
+
+        if(schoolToEdit) {
+            const updatedSchool = {
+                ...schoolToEdit,
+                ...school
+            }
+            result = await editSchoolDetails(database, updatedSchool);
+        } else {
+            result = await newSchool(database, school);
+        }
+
+        const { success, message } = result;
+        
         if (!success) {
             ToastAndroid.show(message, ToastAndroid.LONG);
             return;
         }
-        setDepartment(initialDepartmentState);
-        const { response } = await getAllDepartments(database, schoolID);
-        if (response) setStateDepartments(response);
+        setSchool(initialSchoolState);
+        const { response } = await getAllSchools(database);
+        if (response) setStateSchools(response);
         toggleRefreshMetricsToken();
-        refreshSchoolDetailsToken();
 
-        toggleModal();
+        setModalVisible(false);
         ToastAndroid.show(message, ToastAndroid.SHORT);
-    };
+    }
 
     return (
         <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
-            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Department Form</Text>
+            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>School Creation</Text>
 
-            {departmentKeys
-            .filter((key) => key !== "id" && key !== "started" && key !== "schoolID")
+            {schoolKeys
             .map(key => (
                 <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
                     <IconButton icon={formLabels[key].icon} size={30} iconColor={Colours[customTheme].text}
                         style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
                     />
-                    {key === "headID" 
+                    {key === "deanID" 
                         ? (
-                            department.headID 
+                            school.deanID 
                             ? (
                                 <View style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'space-around', alignItems: 'center' }}>
                                     <Text style={{ color: Colours[customTheme].inverseText }}>{school[key]}</Text>
@@ -137,11 +129,11 @@ const DepartmentForm = ({ schoolID, departmentToEdit, toggleModal }: { schoolID:
                                     items={stateLecturers.length > 0 
                                         ? (
                                             stateLecturers.map((e) => ({ 
-                                                label: `${e.firstName} ${e.lastName}`, 
+                                                label: e.fullName, 
                                                 onPress: () => handleChange(key, e.id) 
                                             }))
                                         ) 
-                                        : ([{ label: "No Lecturers available for appointment as Dean", onPress: () => ToastAndroid.show("Where are your managerial skills?", ToastAndroid.SHORT)}])
+                                        : ([{ label: "No Lecturers enrolled", onPress: () => ToastAndroid.show("Where are your managerial skills?", ToastAndroid.SHORT)}])
                                     }
                                 />
                             )
@@ -151,7 +143,6 @@ const DepartmentForm = ({ schoolID, departmentToEdit, toggleModal }: { schoolID:
                                 style={[
                                     styles.input, 
                                     {
-                                        // backgroundColor: departmentToEdit && key === 'id' ? Colours[customTheme].placeholderText : 'none', 
                                         color: Colours[customTheme].inverseText,
                                         borderRadius: customBorderRadius
                                     }
@@ -159,10 +150,9 @@ const DepartmentForm = ({ schoolID, departmentToEdit, toggleModal }: { schoolID:
                                 inputMode={formLabels[key].type}
                                 autoCapitalize="characters"
                                 placeholder={formLabels[key].label}
-                                value={department[key]}
+                                value={school[key]}
                                 onChangeText={(text) => handleChange(key, text)}
                                 placeholderTextColor={Colours[customTheme].placeholderText}
-                                editable={!departmentToEdit}
                             />
                         )
                     }
@@ -172,13 +162,13 @@ const DepartmentForm = ({ schoolID, departmentToEdit, toggleModal }: { schoolID:
             <Button textColor={Colours[customTheme].text} buttonColor={Colours[customTheme].background} 
                 onPress={handleEnrollment}
             >
-                {departmentToEdit ? 'Update Department Details' : 'Create Department' }
+                {schoolToEdit ? 'Update School Details' : 'Create School' }
             </Button>
         </ScrollView>
     );
 }
 
-export default DepartmentForm;
+export default SchoolForm;
 
 const styles = StyleSheet.create({
   inputWrapper: {

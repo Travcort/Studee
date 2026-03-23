@@ -27,7 +27,7 @@ export const initSchoolsTable = async (db: SQLite.SQLiteDatabase) => {
                 name TEXT UNIQUE NOT NULL,
                 code TEXT UNIQUE NOT NULL,
                 deanID INTEGER UNIQUE,
-                started DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                started DATE NOT NULL DEFAULT CURRENT_DATE,
                 FOREIGN KEY (deanID) REFERENCES ${LECTURERS_TABLE} (id) ON DELETE SET NULL
             );`
         );
@@ -59,7 +59,7 @@ export const initDepartmentsTable = async (db: SQLite.SQLiteDatabase) => {
                 code TEXT UNIQUE NOT NULL,
                 schoolID INTEGER NOT NULL,
                 headID INTEGER,
-                started DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                started DATE NOT NULL DEFAULT CURRENT_DATE,
                 FOREIGN KEY (schoolID) REFERENCES ${SCHOOLS_TABLE} (id),
                 FOREIGN KEY (headID) REFERENCES ${LECTURERS_TABLE} (id)
             );`
@@ -69,25 +69,6 @@ export const initDepartmentsTable = async (db: SQLite.SQLiteDatabase) => {
         return { 
             success: false, 
             message: error instanceof Error ? error.message : `Unknown error occurred while initializing ${DEPARTMENTS_TABLE}`
-        };
-    }
-};
-
-export const initSchoolDepartmentsTable = async (db: SQLite.SQLiteDatabase) => {
-    try {
-        await db.execAsync(`CREATE TABLE IF NOT EXISTS ${SCHOOL_DEPARTMENTS_TABLE} (
-            schoolID INTEGER NOT NULL,
-            departmentID INTEGER NOT NULL,
-            PRIMARY KEY (schoolID, departmentID),
-            FOREIGN KEY (schoolID) REFERENCES ${SCHOOLS_TABLE} (id) ON DELETE CASCADE,
-            FOREIGN KEY (departmentID) REFERENCES ${DEPARTMENTS_TABLE} (id) ON DELETE CASCADE
-            );`
-        );
-        return { success: true, message: `Successfully initialized ${SCHOOL_DEPARTMENTS_TABLE} table` };
-    } catch (error) {
-        return { 
-            success: false, 
-            message: error instanceof Error ? error.message : `Unknown error occurred while initializing ${SCHOOL_DEPARTMENTS_TABLE}`
         };
     }
 };
@@ -111,7 +92,7 @@ export const initCoursesTable = async (db: SQLite.SQLiteDatabase) => {
                 code TEXT UNIQUE NOT NULL,
                 schoolID INTEGER NOT NULL,
                 departmentID INTEGER NOT NULL,
-                started DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                started DATE NOT NULL DEFAULT CURRENT_DATE,
                 FOREIGN KEY (schoolID) REFERENCES ${SCHOOLS_TABLE} (id),
                 FOREIGN KEY (departmentID) REFERENCES ${DEPARTMENTS_TABLE} (id)
             );`
@@ -144,7 +125,7 @@ export const initUnitsTable = async (db: SQLite.SQLiteDatabase) => {
                 code TEXT UNIQUE NOT NULL,
                 creditHours INTEGER NOT NULL,
                 departmentID INTEGER NOT NULL,
-                started DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                started DATE NOT NULL DEFAULT CURRENT_DATE,
                 FOREIGN KEY (departmentID) REFERENCES ${DEPARTMENTS_TABLE} (id)
             );`
         );
@@ -155,7 +136,7 @@ export const initUnitsTable = async (db: SQLite.SQLiteDatabase) => {
             message: error instanceof Error ? error.message : `Unknown error occurred while initializing ${UNITS_TABLE}`
         };
     }
-}
+};
 
 export const initCourseUnitsTable = async (db: SQLite.SQLiteDatabase) => {
     try {
@@ -179,8 +160,7 @@ export const initCourseUnitsTable = async (db: SQLite.SQLiteDatabase) => {
 export type LecturerTypes = {
     id: number;
     staffNo: string;
-    firstName: string;
-    lastName: string;
+    fullName: string;
     gender: string;
     dob: string;
     contact: string;
@@ -198,15 +178,14 @@ export const initLecturersTable = async (db: SQLite.SQLiteDatabase) => {
         await db.execAsync(`CREATE TABLE IF NOT EXISTS ${LECTURERS_TABLE} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 staffNo TEXT UNIQUE NOT NULL,
-                firstName TEXT NOT NULL,
-                lastName TEXT NOT NULL,
+                fullName TEXT NOT NULL,
                 gender TEXT NOT NULL,
                 dob TEXT NOT NULL,
                 contact TEXT NOT NULL,
                 email TEXT NOT NULL,
                 address TEXT,
                 photoUri TEXT NOT NULL,
-                employmentDate DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                employmentDate DATE NOT NULL DEFAULT CURRENT_DATE,
                 departmentID INTEGER NOT NULL,
                 FOREIGN KEY (departmentID) REFERENCES ${DEPARTMENTS_TABLE} (id)
             );`
@@ -243,8 +222,7 @@ export const initLecturerUnitsTable = async (db: SQLite.SQLiteDatabase) => {
 export type StudentTypes = {
     id: number;
     regNo: string;
-    firstName: string;
-    lastName: string;
+    fullName: string;
     gender: string;
     dob: string;
     contact: string;
@@ -254,13 +232,14 @@ export type StudentTypes = {
     photoUri: string;
 };
 
+export type NewStudentTypes = Omit<StudentTypes, "id"|"enrollmentDate">;
+
 export const initStudentsTable = async (db: SQLite.SQLiteDatabase) => {
     try {
         await db.execAsync(`CREATE TABLE IF NOT EXISTS ${STUDENTS_TABLE} (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 regNo TEXT UNIQUE NOT NULL,
-                firstName TEXT NOT NULL,
-                lastName TEXT NOT NULL,
+                fullName TEXT NOT NULL,
                 gender TEXT,
                 dob TEXT NOT NULL,
                 contact TEXT,

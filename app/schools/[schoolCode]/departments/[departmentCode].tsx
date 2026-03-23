@@ -1,11 +1,11 @@
-import AllDeparmentOperations from "@/components/schools/AllDepartmentOperations";
+import AllDepartmentOperations from "@/components/departments/AllOperations";
 import Avatar from "@/components/shared/Avatar";
 import Button from "@/components/shared/Button";
 import Card from "@/components/shared/Card";
 import CustomModal from "@/components/shared/CustomModal";
 import DetailField from "@/components/shared/DetailField";
 import IconButton from "@/components/shared/IconButton";
-import Personcard from "@/components/shared/PersonCard";
+import Personcard from "@/components/PersonCard";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import { deleteDepartment } from "@/lib/Database/Operations";
@@ -59,13 +59,12 @@ export default function Department() {
             toggleRefreshMetricsToken();
             refreshSchoolDetailsToken();
             ToastAndroid.show(message, ToastAndroid.SHORT);
-            toggleModal();
+            setModalVisible(false);
             router.dismiss();
         })();
     };
     
     const [modalVisible, setModalVisible] = useState(false);
-    const toggleModal = () => setModalVisible(prev => !prev);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
@@ -81,7 +80,7 @@ export default function Department() {
                                 <IconButton
                                     icon="account-edit"
                                     iconColor={Colours[customTheme].inverseText}
-                                    onPress={() =>  toggleModal()}
+                                    onPress={() =>  setModalVisible(true)}
                                     style={{
                                         position: "absolute",
                                         top: '20%',
@@ -109,12 +108,12 @@ export default function Department() {
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
                                         <Avatar 
                                             uri={department.head.photoUri}
-                                            name={department.head.firstName ?? 'Not Available'}
+                                            name={department.head.fullName ?? 'Not Available'}
                                             size={72}
                                         />
 
                                         <View style={{ flex: 1 }}>
-                                            <DetailField label="Name" value={department.head.firstName} />
+                                            <DetailField label="Name" value={department.head.fullName} />
                                             <DetailField label="Email" value={department.head.email} />
                                             <DetailField label="Contact" value={department.head.contact} />
                                         </View>
@@ -126,7 +125,7 @@ export default function Department() {
                                             No Department Head Yet
                                         </Text>
 
-                                        <Button onPress={() => {setDepartmentHeadOperation(true); toggleModal();}}>Appoint Department Head</Button>
+                                        <Button onPress={() => {setDepartmentHeadOperation(true); setModalVisible(true);}}>Appoint Department Head</Button>
                                     </View>
                                 )
                             }
@@ -145,11 +144,10 @@ export default function Department() {
                                                 id={item.id} 
                                                 table="lecturers"
                                                 uniqueIdentifier={item.staffNo}
-                                                firstName={item.firstName}
-                                                lastName={item.lastName}
+                                                fullName={item.fullName}
                                             />
                                         )}
-                                        ListFooterComponent={<Button onPress={() => {setLecturersOperation(true); toggleModal();}}>Add New Lecturer</Button>}
+                                        ListFooterComponent={<Button onPress={() => {setLecturersOperation(true); setModalVisible(true);}}>Add New Lecturer</Button>}
                                     />
                                 ) 
                                 : (
@@ -158,13 +156,13 @@ export default function Department() {
                                             No Department Lecturers Yet
                                         </Text>
 
-                                        <Button onPress={() => {setLecturersOperation(true); toggleModal();}}>Add Lecturer</Button>
+                                        <Button onPress={() => {setLecturersOperation(true); setModalVisible(true);}}>Add Lecturer</Button>
                                     </View>
                                 )
                             }
                         </Card>
 
-                        <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); toggleModal();}}>
+                        <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>
                             Delete Department
                         </Button>
                     </View>
@@ -178,17 +176,18 @@ export default function Department() {
 
             <CustomModal 
                 modalVisible={modalVisible} 
-                toggleModal={toggleModal}
+                setModalVisible={setModalVisible}
                 onRequestCloseOperations={() => {
                     setDeleteOperation(false);
                     setDepartmentHeadOperation(false);
                     setLecturersOperation(false);
                 }}
             >
-                {departmentToEdit && 
-                    <AllDeparmentOperations 
-                        departmentName={department?.name} 
-                        {...{ schoolID, toggleModal, 
+                {department && departmentToEdit &&
+                    <AllDepartmentOperations
+                        departmentID={Number(departmentID)}
+                        departmentName={department.name} 
+                        {...{ schoolID, setModalVisible, 
                                 departmentToEdit, deleteOperation, setDeleteOperation, handleDelete, 
                                 departmentHeadOperation, lecturersOperation 
                         }} 

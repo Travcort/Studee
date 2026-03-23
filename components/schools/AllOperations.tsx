@@ -1,14 +1,14 @@
 import { Dispatch, SetStateAction } from "react";
-import LecturerForm from "../lecturers/LecturerForm";
 import DialogContent from "../shared/DialogContent";
-import DepartmentForm from "./DepartmentForm";
-import SchoolForm from "./SchoolForm";
+import DepartmentForm from "../departments/Form";
+import SchoolForm from "./Form";
 import { SchoolDetails } from "@/lib/State";
+import LecturersList from "../lecturers/List";
 
 type AllSchoolOperationsProps = {
-    toggleModal: () => void;
+    setModalVisible: Dispatch<SetStateAction<boolean>>;
     schoolID: string;
-    schoolName: string|undefined;
+    schoolName: string;
     schoolToEdit: SchoolDetails|undefined;
     deleteOperation: boolean;
     setDeleteOperation: Dispatch<SetStateAction<boolean>>;
@@ -17,23 +17,23 @@ type AllSchoolOperationsProps = {
     deanOperation: boolean;
 };
 
-export default function AllSchoolOperations ({ toggleModal, schoolID, schoolName, schoolToEdit, deleteOperation, setDeleteOperation, departmentOperation, handleDelete, deanOperation }: Readonly<AllSchoolOperationsProps>) {
+export default function AllSchoolOperations ({ setModalVisible, schoolID, schoolName, schoolToEdit, deleteOperation, setDeleteOperation, departmentOperation, handleDelete, deanOperation }: Readonly<AllSchoolOperationsProps>) {
     if (deleteOperation) {
         return (
             <DialogContent
                 title="Delete School"
                 message={`Are you sure you want to delete ${schoolName}? This action cannot be undone.`}
                 actions={[
-                    { label: "Cancel", onPress: () => {setDeleteOperation(false); toggleModal();} },
+                    { label: "Cancel", onPress: () => {setDeleteOperation(false); setModalVisible(false);} },
                     { label: "Delete", onPress: handleDelete, mode: "contained" }
                 ]}
             />
         )
     } else if (departmentOperation) {
-        return <DepartmentForm schoolID={Number(schoolID)} toggleModal={toggleModal} />
+        return <DepartmentForm schoolID={Number(schoolID)} setModalVisible={setModalVisible} />
     } else if (deanOperation) {
-        return <LecturerForm toggleModal={toggleModal} />
+        return <LecturersList />
     } else {
-        return <SchoolForm schoolToEdit={schoolToEdit} toggleModal={toggleModal} />
+        return <SchoolForm {...{ schoolToEdit, setModalVisible }} />
     }
 }

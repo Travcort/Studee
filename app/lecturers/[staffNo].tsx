@@ -1,6 +1,5 @@
 import CustomModal from "@/components/shared/CustomModal";
 import IconButton from "@/components/shared/IconButton";
-import StudentForm from "@/components/students/Form";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import StateStore from "@/lib/State";
@@ -10,28 +9,29 @@ import { Image, ScrollView, Text, ToastAndroid, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "@/components/shared/Button";
 import DialogContent from "@/components/shared/DialogContent";
-import { deleteStudent, getAllStudents } from "@/lib/Database/Operations";
+import { deleteLecturer, getAllLecturers } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
+import LecturerForm from "@/components/lecturers/Form";
 import PersonSectionCard from "@/components/PersonSectionCard";
 
-export default function Student() {
-    const { regNo } = useLocalSearchParams();
+export default function Lecturer() {
+    const { staffNo } = useLocalSearchParams();
     const router = useRouter();
     const { customTheme, customBorderRadius } = useMyAppContext();
     const { database } = useDatabase();
-    const students = StateStore(state => state.students);
-    const setStudents = StateStore(state => state.setStudents);
+    const lecturers = StateStore(state => state.lecturers);
+    const setLecturers = StateStore(state => state.setLecturers);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
-    const student = students.find((e) => e.regNo === regNo);
+    const lecturer = lecturers.find((e) => e.staffNo === staffNo);
 
     const [deleteOperation, setDeleteOperation] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
-    if(!student) {
+    if(!lecturer) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
                 <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>
-                    {`Student ${regNo} does not exist!`}
+                    {`Lecturer ${staffNo} does not exist!`}
                 </Text>
             </SafeAreaView>
         );
@@ -39,15 +39,15 @@ export default function Student() {
 
     const handleDelete = () => {
         (async () => {
-            const { success, message } = await deleteStudent(database, student);
+            const { success, message } = await deleteLecturer(database, lecturer);
             if(!success) {
                 ToastAndroid.show(message, ToastAndroid.LONG);
                 return;
             }
             ToastAndroid.show(message, ToastAndroid.SHORT);
 
-            const { response } = await getAllStudents(database);
-            if (response) setStudents(response);
+            const { response } = await getAllLecturers(database);
+            if (response) setLecturers(response);
             toggleRefreshMetricsToken();
 
             setModalVisible(false);
@@ -60,7 +60,7 @@ export default function Student() {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
                     <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: '5%', color: Colours[customTheme].text }}>
-                        {student.fullName}
+                        {lecturer.fullName}
                     </Text>
                     <IconButton 
                         icon="account-edit"
@@ -69,7 +69,7 @@ export default function Student() {
                     />
                 </View>
 
-                <Image source={{ uri: student.photoUri }} 
+                <Image source={{ uri: lecturer.photoUri }} 
                     style={{ borderRadius: customBorderRadius * 50, backgroundColor: Colours[customTheme].inverseBackground, height: 200, width: 200 }} 
                 />
                 
@@ -79,43 +79,43 @@ export default function Student() {
                         details={[
                             {
                                 label: "Gender",
-                                value: student.gender
+                                value: lecturer.gender
                             },
                             {
                                 label: "Date of Birth",
-                                value: student.dob
+                                value: lecturer.dob
                             },
                             {
                                 label: "Contact",
-                                value: student.contact
+                                value: lecturer.contact
                             },
                             {
                                 label: "Address",
-                                value: student.address
+                                value: lecturer.address
                             }
                         ]}
                     />
 
                     <PersonSectionCard 
-                        heading="School Info"
+                        heading="Work Info"
                         details={[
                             {
-                                label: "Registration Number",
-                                value: student.regNo
+                                label: "Staff Number",
+                                value: lecturer.staffNo
                             },
                             {
                                 label: "Email",
-                                value: student.email
+                                value: lecturer.email
                             },
                             {
-                                label: "Enrollment Date",
-                                value: student.enrollmentDate
+                                label: "Employment Date",
+                                value: lecturer.employmentDate
                             }
                         ]}
                     />
                 </View>
 
-                <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Student</Button>
+                <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Lecturer</Button>
             </ScrollView>
 
             <CustomModal 
@@ -128,15 +128,15 @@ export default function Student() {
                 {deleteOperation 
                     ? (
                         <DialogContent
-                            title="Delete Student"
-                            message={`Are you sure you want to delete student ${student.fullName}? This action cannot be undone.`}
+                            title="Delete Lecturer"
+                            message={`Are you sure you want to delete Lecturer ${lecturer.fullName}? This action cannot be undone.`}
                             actions={[
                                 { label: "Cancel", onPress: () => {setDeleteOperation(false); setModalVisible(false);} },
                                 { label: "Delete", onPress: handleDelete, mode: "contained" }
                             ]}
                         />
                     ) 
-                    : <StudentForm studentToEdit={student} setModalVisible={setModalVisible} />
+                    : <LecturerForm departmentID={lecturer.departmentID} lecturerToEdit={lecturer} setModalVisible={setModalVisible} />
                 }
             </CustomModal>
         </SafeAreaView>

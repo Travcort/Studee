@@ -9,7 +9,7 @@ import {
   Easing, 
   TouchableWithoutFeedback, 
   Modal,
-  StyleSheet 
+  StyleSheet
 } from "react-native";
 
 type DropdownItem = {

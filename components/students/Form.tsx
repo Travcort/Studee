@@ -1,28 +1,25 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import PhotoUploadInput from "../shared/PhotoUploadInput";
-// import DateSelector from "./DateSelector";
 import { editStudentDetails, newStudent, getAllStudents } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
-import { StudentTypes } from "@/lib/Database/Schema";
+import { NewStudentTypes, StudentTypes } from "@/lib/Database/Schema";
 import DateSelector from "../shared/DateSelector";
 
-const studentKeys: (keyof StudentTypes)[] = [
+const studentKeys: (keyof NewStudentTypes)[] = [
     "regNo",
-    "firstName",
-    "lastName",
+    "fullName",
     "gender",
     "dob",
     "contact",
     "email",
     "address",
-    "enrollmentDate",
     "photoUri",
 ];
 
@@ -42,20 +39,15 @@ type FormLabelType = {
     type: KeyboardType;
 };
 
-const formLabels: Record<keyof StudentTypes, FormLabelType> = {
+const formLabels: Record<keyof NewStudentTypes, FormLabelType> = {
     regNo: {
         label: 'Registration Number',
         icon: 'account',
         type: 'text'
     },
-    firstName: {
-        label: 'First Name',
+    fullName: {
+        label: 'Full Name',
         icon: 'account-edit',
-        type: 'text'
-    },
-    lastName: {
-        label: 'Last Name',
-        icon: 'account-edit-outline',
         type: 'text'
     },
     gender: {
@@ -83,11 +75,6 @@ const formLabels: Record<keyof StudentTypes, FormLabelType> = {
         icon: 'map-marker',
         type: 'text'
     },
-    enrollmentDate: {
-        label: 'Class',
-        icon: 'school',
-        type: 'text'
-    },
     photoUri: {
         label: 'Photo',
         icon: 'camera',
@@ -95,27 +82,35 @@ const formLabels: Record<keyof StudentTypes, FormLabelType> = {
     }
 };
 
-const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTypes, toggleModal: () => void }) => {
+const StudentForm = ({ studentToEdit, setModalVisible }: { studentToEdit?: StudentTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
     const { customTheme, customBorderRadius } = useMyAppContext();
     const { database } = useDatabase();
     const setStudents = StateStore(state => state.setStudents);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
 
-    const initialStudentState = studentToEdit 
-    ?? {
-        regNo: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        contact: '',
-        gender: '',
-        dob: '',
-        enrollmentDate: '',
-        address: '',
-        photoUri: ''
-    };
+    const initialStudentState = studentToEdit
+        ? {
+            regNo: studentToEdit.regNo,
+            fullName: studentToEdit.fullName,
+            email: studentToEdit.email,
+            contact: studentToEdit.contact,
+            gender: studentToEdit.gender,
+            dob: studentToEdit.dob,
+            address: studentToEdit.address,
+            photoUri: studentToEdit.photoUri,
+        }
+        : {
+            regNo: '',
+            fullName: '',
+            email: '',
+            contact: '',
+            gender: '',
+            dob: '',
+            address: '',
+            photoUri: ''
+        };
 
-    const [student, setStudent] = useState<StudentTypes>(initialStudentState);
+    const [student, setStudent] = useState<NewStudentTypes>(initialStudentState);
 
     const [activeCalendar, setActiveCalendar] = useState<string|null>(null);
     const toggleCalendarModal = (key: string) => {
@@ -127,19 +122,36 @@ const StudentForm = ({ studentToEdit, toggleModal }: { studentToEdit?: StudentTy
     };
 
     const handleEnrollment = async () => {
-        const { success, message } = await (studentToEdit ? editStudentDetails(database, student) : newStudent(database, student));
+        let result;
+
+        if (studentToEdit) {
+            const updatedStudent = {
+                ...studentToEdit,
+                ...student
+            };
+
+            result = await editStudentDetails(database, updatedStudent);
+        } else {
+            result = await newStudent(database, student);
+        }
+
+        const { success, message } = result;
+
         if (!success) {
             ToastAndroid.show(message, ToastAndroid.LONG);
             return;
         }
+
         setStudent(initialStudentState);
+
         const { response } = await getAllStudents(database);
         if (response) setStudents(response);
-        toggleRefreshMetricsToken();
 
-        toggleModal();
+        toggleRefreshMetricsToken();
+        setModalVisible(false);
+
         ToastAndroid.show(message, ToastAndroid.SHORT);
-    }
+    };
 
     return (
         <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>

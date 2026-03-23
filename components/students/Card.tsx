@@ -48,7 +48,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                             fontSize: 16,
                         }}
                     >
-                        {item.firstName.charAt(0)}{item.lastName.charAt(0)}
+                        {item.fullName.charAt(0)}{item.fullName.split('')[1].charAt(0)}
                     </Text>
                 </View>
 
@@ -61,7 +61,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                         }}
                         numberOfLines={1}
                     >
-                        {item.firstName} {item.lastName}
+                        {item.fullName}
                     </Text>
                     <Text
                         style={{

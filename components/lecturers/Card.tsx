@@ -3,21 +3,20 @@ import { useMyAppContext } from "@/lib/Context";
 import { Link } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
-type PersonCardProps = { 
-    id: number; 
-    table: 'students'|'lecturers'; 
+type LecturerCardProps = { 
+    id: number,
     uniqueIdentifier: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    staffNo: string;
 };
 
-export default function Personcard({ id, table, uniqueIdentifier, firstName, lastName }: Readonly<PersonCardProps>) {
+export default function LecturerCard ({ id, uniqueIdentifier, name, staffNo }: Readonly<LecturerCardProps>) {
     const { customTheme, customBorderRadius } = useMyAppContext();
 
     return (
         <Link
             key={id}
-            href={`/${table}/${encodeURIComponent(uniqueIdentifier)}`}
+            href={`/lecturers/${encodeURIComponent(uniqueIdentifier)}?lecturerID=${id}`}
             asChild
         >
             <TouchableOpacity
@@ -40,7 +39,7 @@ export default function Personcard({ id, table, uniqueIdentifier, firstName, las
             >
                 <View
                     style={{
-                        backgroundColor: Colours[customTheme].background ?? "#007AFF",
+                        backgroundColor: Colours[customTheme].background,
                         width: 34,
                         height: 34,
                         borderRadius: 99,
@@ -55,7 +54,7 @@ export default function Personcard({ id, table, uniqueIdentifier, firstName, las
                             fontSize: 16,
                         }}
                     >
-                        {firstName.charAt(0)}{lastName.charAt(0)}
+                        {uniqueIdentifier}
                     </Text>
                 </View>
 
@@ -66,9 +65,9 @@ export default function Personcard({ id, table, uniqueIdentifier, firstName, las
                             fontSize: 17,
                             fontWeight: "600",
                         }}
-                        numberOfLines={1}
+                        numberOfLines={2}
                     >
-                        {firstName} {lastName}
+                        {name}
                     </Text>
                     <Text
                         style={{
@@ -77,7 +76,7 @@ export default function Personcard({ id, table, uniqueIdentifier, firstName, las
                             marginTop: 3,
                         }}
                     >
-                        {table === 'students' ? 'Reg No:' : 'Staff No:'} {uniqueIdentifier}
+                        {staffNo}
                     </Text>
                 </View>
             </TouchableOpacity>

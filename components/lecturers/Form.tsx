@@ -1,27 +1,26 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import PhotoUploadInput from "../shared/PhotoUploadInput";
-import { getAllLecturers } from "@/lib/Database/Operations";
+import { editLecturerDetails, getAllLecturers, newLecturer } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
-import { LecturerTypes } from "@/lib/Database/Schema";
+import { LecturerTypes, NewLecturerTypes } from "@/lib/Database/Schema";
 import DateSelector from "../shared/DateSelector";
 
-const lecturerKeys: (keyof LecturerTypes)[] = [
+const lecturerKeys: (keyof NewLecturerTypes)[] = [
     "staffNo",
-    "firstName",
-    "lastName",
+    "fullName",
     "gender",
     "dob",
     "contact",
     "email",
     "address",
-    "employmentDate",
+    "departmentID",
     "photoUri",
 ];
 
@@ -41,25 +40,15 @@ type FormLabelType = {
     type: KeyboardType;
 };
 
-const formLabels: Record<keyof LecturerTypes, FormLabelType> = {
-    id: {
-        label: 'ID',
-        icon: 'account-outline',
-        type: 'none'
-    },
+const formLabels: Record<keyof NewLecturerTypes, FormLabelType> = {
     staffNo: {
         label: 'Staff Number',
         icon: 'account',
         type: 'text'
     },
-    firstName: {
-        label: 'First Name',
+    fullName: {
+        label: 'Full Name',
         icon: 'account-edit',
-        type: 'text'
-    },
-    lastName: {
-        label: 'Last Name',
-        icon: 'account-edit-outline',
         type: 'text'
     },
     gender: {
@@ -87,11 +76,6 @@ const formLabels: Record<keyof LecturerTypes, FormLabelType> = {
         icon: 'map-marker',
         type: 'text'
     },
-    employmentDate: {
-        label: 'Employed',
-        icon: 'school',
-        type: 'text'
-    },
     departmentID: {
         label: 'Department',
         icon: 'school',
@@ -104,27 +88,40 @@ const formLabels: Record<keyof LecturerTypes, FormLabelType> = {
     }
 };
 
-const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: LecturerTypes, toggleModal: () => void }) => {
+const LecturerForm = ({ departmentID, lecturerToEdit, setModalVisible }: { departmentID: number, lecturerToEdit?: LecturerTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
     const { customTheme, customBorderRadius } = useMyAppContext();
     const { database } = useDatabase();
+    
+    const schoolDetails = StateStore(state => state.schoolDetails);
     const setStateLecturers = StateStore(state => state.setLecturers);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
 
     const initialLecturerState = lecturerToEdit 
-    ?? {
+    ? {
+        staffNo: lecturerToEdit.staffNo,
+        fullName: lecturerToEdit.fullName,
+        email: lecturerToEdit.email,
+        contact: lecturerToEdit.contact,
+        gender: lecturerToEdit.gender,
+        dob: lecturerToEdit.dob,
+        departmentID: lecturerToEdit.departmentID,
+        address: lecturerToEdit.address,
+        photoUri: lecturerToEdit.photoUri
+    }
+    : {
         staffNo: '',
-        firstName: '',
-        lastName: '',
+        fullName: '',
         email: '',
         contact: '',
         gender: '',
         dob: '',
-        employmentDate: '',
+        departmentID: departmentID,
         address: '',
         photoUri: ''
     };
 
-    const [lecturer, setLecturer] = useState<Omit<LecturerTypes, "id" | "departmentID">>(initialLecturerState);
+    const [allLecturers, setAllLecturers] = useState<LecturerTypes[] | null>(null);
+    const [lecturer, setLecturer] = useState<NewLecturerTypes>(initialLecturerState);
 
     const [activeCalendar, setActiveCalendar] = useState<string|null>(null);
     const toggleCalendarModal = (key: string) => {
@@ -136,7 +133,20 @@ const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: Lectur
     };
 
     const handleEnrollment = async () => {
-        const { success, message } = await (lecturerToEdit ? editLecturerDetails(database, lecturer) : newLecturer(database, lecturer));
+        let result;
+        
+        if (lecturerToEdit) {
+            const updatedLecturer = {
+                ...lecturerToEdit,
+                lecturer
+            }
+            result = await editLecturerDetails(database, updatedLecturer);
+        } else {
+            result = await newLecturer(database, lecturer);
+        }
+
+        const { success, message } = result;
+
         if (!success) {
             ToastAndroid.show(message, ToastAndroid.LONG);
             return;
@@ -146,18 +156,65 @@ const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: Lectur
         if (response) setStateLecturers(response);
         toggleRefreshMetricsToken();
 
-        toggleModal();
+        setModalVisible(false);
         ToastAndroid.show(message, ToastAndroid.SHORT);
     }
+
+    useEffect(() => {
+        (async () => {
+            const { success, message, response } = await getAllLecturers(database);
+            if (!success) {
+                ToastAndroid.show(message, ToastAndroid.LONG);
+            }
+            const allLecturers = response as LecturerTypes[];
+            setAllLecturers(allLecturers);
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (!lecturerToEdit && allLecturers) {
+            const currentYear = new Date().getFullYear();
+            const newLecNumber = (allLecturers.filter(lec => {
+                const year = new Date(lec.employmentDate).getFullYear();
+                return year === currentYear;
+            }).length ?? 0) + 1;
+            const generatedStaffNo = `ST/LEC/${currentYear}/${newLecNumber}`;
+
+            setLecturer(prev => ({
+                ...prev,
+                staffNo: generatedStaffNo
+            }));
+        }
+    }, [allLecturers]);
 
     return (
         <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
             <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Lecturer Enrollment</Text>
 
             {lecturerKeys
-            .filter((e) => !e.includes("staffNo"))
             .map(key => (
-                key === 'photoUri' 
+                key === 'staffNo' 
+                ? (
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
+                        <IconButton icon={'school'} size={30} iconColor={Colours[customTheme].text}
+                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                        />
+
+                        <TextInput
+                            style={[
+                                styles.input, 
+                                {
+                                    backgroundColor: Colours[customTheme].placeholderText, 
+                                    color: Colours[customTheme].inverseText,
+                                    borderRadius: customBorderRadius
+                                }
+                            ]}
+                            value={lecturer.staffNo}
+                            editable={false}
+                        />
+                    </View>
+                ) 
+                : (key === 'photoUri') 
                 ? (
                     <PhotoUploadInput key={key}
                         photoUri={lecturer.photoUri}
@@ -173,6 +230,27 @@ const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: Lectur
                         property={key} handleChange={handleChange}
                     />
                 )
+                : (key === 'departmentID')
+                ? (
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
+                        <IconButton icon={'school'} size={30} iconColor={Colours[customTheme].text}
+                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                        />
+
+                        <TextInput
+                            style={[
+                                styles.input, 
+                                {
+                                    backgroundColor: Colours[customTheme].placeholderText, 
+                                    color: Colours[customTheme].inverseText,
+                                    borderRadius: customBorderRadius
+                                }
+                            ]}
+                            value={schoolDetails?.departments.find(dep => dep.id === departmentID)?.name}
+                            editable={false}
+                        />
+                    </View>
+                )
                 : (
                     <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
                         <IconButton icon={formLabels[key].icon} size={30} iconColor={Colours[customTheme].text}
@@ -182,7 +260,6 @@ const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: Lectur
                             style={[
                                 styles.input, 
                                 {
-                                    backgroundColor: lecturerToEdit && key === 'staffNo' ? Colours[customTheme].placeholderText : 'none', 
                                     color: Colours[customTheme].inverseText,
                                     borderRadius: customBorderRadius
                                 }
@@ -192,7 +269,6 @@ const LecturerForm = ({ lecturerToEdit, toggleModal }: { lecturerToEdit?: Lectur
                             value={lecturer[key]}
                             onChangeText={(text) => handleChange(key, text)}
                             placeholderTextColor={Colours[customTheme].placeholderText}
-                            editable={!(lecturerToEdit && key === 'staffNo')}
                         />
                     </View>
                 )

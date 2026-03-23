@@ -12,9 +12,9 @@ import { getAllSchools } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import DetailField from "@/components/shared/DetailField";
 import Avatar from "@/components/shared/Avatar";
-import DepartmentCard from "@/components/schools/DepartmentCard";
+import DepartmentCard from "@/components/departments/Card";
 import Card from "@/components/shared/Card";
-import AllSchoolOperations from "@/components/schools/AllSchoolOperations";
+import AllSchoolOperations from "@/components/schools/AllOperations";
 
 export default function School() {
     const { schoolCode, schoolID } = useLocalSearchParams<{ schoolCode: string; schoolID: string }>();
@@ -103,12 +103,12 @@ export default function School() {
                                     <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
                                         <Avatar 
                                             uri={school.dean.photoUri}
-                                            name={school.dean.firstName ?? 'Not Available'}
+                                            name={school.dean.fullName ?? 'Not Available'}
                                             size={72}
                                         />
 
                                         <View style={{ flex: 1 }}>
-                                            <DetailField label="Name" value={school.dean.firstName} />
+                                            <DetailField label="Name" value={school.dean.fullName} />
                                             <DetailField label="Email" value={school.dean.email} />
                                             <DetailField label="Contact" value={school.dean.contact} />
                                         </View>
@@ -140,7 +140,7 @@ export default function School() {
                                                 schoolCode={school.code}
                                                 uniqueIdentifier={item.code}
                                                 name={item.name}
-                                                head={item.head ? `${item.head?.firstName} ${item.head?.lastName}` : 'Vacant'}
+                                                head={item.head ? item.head?.fullName : 'Vacant'}
                                             />
                                         )}
                                         ListFooterComponent={<Button onPress={() => {setDepartmentOperation(true); toggleModal();}}>Create New Department</Button>}
@@ -170,14 +170,14 @@ export default function School() {
 
             <CustomModal 
                 modalVisible={modalVisible}
-                toggleModal={toggleModal} 
+                setModalVisible={setModalVisible} 
                 onRequestCloseOperations={() => {
                     setDeleteOperation(false);
                     setDepartmentOperation(false);
                     setDeanOperation(false);
                 }} 
             >
-                {schoolToEdit && <AllSchoolOperations schoolName={school?.name} {...{ toggleModal, schoolID, schoolToEdit, deleteOperation, setDeleteOperation, handleDelete, departmentOperation, deanOperation }} />}
+                {school && schoolToEdit && <AllSchoolOperations schoolName={school.name} {...{ setModalVisible, schoolID, schoolToEdit, deleteOperation, setDeleteOperation, handleDelete, departmentOperation, deanOperation }} />}
             </CustomModal>
         </SafeAreaView>
     );

@@ -2,7 +2,7 @@ import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function StudentDetailField({ label, value }: Readonly<{ label: string, value: string }>) {
+export default function PersonDetailField({ label, value }: Readonly<{ label: string, value: string }>) {
     const { customTheme, customBorderRadius } = useMyAppContext();
 
     return (
@@ -28,7 +28,7 @@ export default function StudentDetailField({ label, value }: Readonly<{ label: s
 
 const styles = StyleSheet.create({
   fieldContainer: {
-    width: "100%",
+    width: '48%',
   },
   label: {
     fontSize: 14,

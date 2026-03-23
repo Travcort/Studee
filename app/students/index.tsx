@@ -1,6 +1,6 @@
 import CustomModal from "@/components/shared/CustomModal";
 import FloatingActionButton from "@/components/shared/Fab";
-import StudentForm from "@/components/students/StudentForm";
+import StudentForm from "@/components/students/Form";
 import Colours from "@/lib/Colours";
 import { useMyAppContext } from "@/lib/Context";
 import { getAllStudents } from "@/lib/Database/Operations";
@@ -10,7 +10,7 @@ import { useEffect, useState} from "react";
 import { FlatList, Text, ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StudentTypes } from "@/lib/Database/Schema";
-import Personcard from "@/components/shared/PersonCard";
+import Personcard from "@/components/PersonCard";
 
 export default function StudentsPage() {
     const { customTheme } = useMyAppContext();
@@ -44,8 +44,7 @@ export default function StudentsPage() {
                                 id={item.id} 
                                 table="students" 
                                 uniqueIdentifier={item.regNo} 
-                                firstName={item.firstName} 
-                                lastName={item.lastName} 
+                                fullName={item.fullName}
                             />
                         )}
                     />
@@ -57,10 +56,10 @@ export default function StudentsPage() {
 
             <CustomModal 
                 modalVisible={modalVisible} 
-                toggleModal={toggleModal}
+                setModalVisible={setModalVisible}
                 onRequestCloseOperations={() => {}}
             >
-                <StudentForm toggleModal={toggleModal} />
+                <StudentForm setModalVisible={setModalVisible} />
             </CustomModal>
 
             <FloatingActionButton 
