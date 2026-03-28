@@ -1,10 +1,9 @@
-import Colours from '@/lib/Colours';
-import { useMyAppContext } from "@/lib/Context";
 import { Dispatch, SetStateAction } from "react";
 import { StyleSheet, Text, ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AvatarButton from "./shared/AvatarButton";
 import IconButton from "./shared/IconButton";
+import { useTheme } from '@/lib/Theme';
 
 interface PageHeaderProps {
   page: string;
@@ -12,15 +11,15 @@ interface PageHeaderProps {
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ page, setOpen }) => {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
 
     return (
-      <SafeAreaView style={[styles.pageHeader, { backgroundColor: Colours[customTheme].background }]}>
+      <SafeAreaView style={[styles.pageHeader, { backgroundColor: colours.background }]}>
           <AvatarButton setOpen={setOpen} />
-          <Text style={{ color: Colours[customTheme].text, fontWeight: '700', fontSize: 20 }}>{page}</Text>
+          <Text style={{ color: colours.text, fontWeight: '700', fontSize: 20 }}>{page}</Text>
           <IconButton
             icon="bell"
-            iconColor={Colours[customTheme].text}
+            iconColor={colours.text}
             size={20}
             onPress={() => ToastAndroid.show('Ding! 😂', ToastAndroid.SHORT)}
           />

@@ -1,16 +1,16 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { View } from "react-native";
 
 export default function Card ({ children }: Readonly<{children: React.ReactNode}>) {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
+
     return (
         <View
             style={{
                 width: "95%",
-                backgroundColor: Colours[customTheme].inverseBackground,
+                backgroundColor: colours.inverseBackground,
                 padding: '5%',
-                borderRadius: customBorderRadius * 2,
+                borderRadius: spacing.borderRadius * 2,
                 shadowColor: "#000",
                 shadowOpacity: 0.1,
                 shadowRadius: 8,

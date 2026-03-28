@@ -16,6 +16,7 @@ type AllDepartmentOperationsProps = {
     handleDelete: () => void;
     departmentHeadOperation: boolean;
     lecturersOperation: boolean;
+    coursesOperation: boolean;
 };
 
 export default function AllDepartmentOperations ({ 
@@ -23,7 +24,7 @@ export default function AllDepartmentOperations ({
     departmentID, departmentName, 
     setModalVisible, departmentToEdit, 
     deleteOperation, setDeleteOperation, handleDelete, 
-    departmentHeadOperation, lecturersOperation 
+    departmentHeadOperation, lecturersOperation, coursesOperation 
 }: Readonly<AllDepartmentOperationsProps>) {
     if (deleteOperation) {
         return (
@@ -39,6 +40,9 @@ export default function AllDepartmentOperations ({
     } else if(departmentHeadOperation) {
         return <LecturersList />
     } else if (lecturersOperation) {
+        return <LecturerForm {...{ departmentID, setModalVisible }} />
+    } else if (coursesOperation) {
+        // TODO: Create a Courses Form
         return <LecturerForm {...{ departmentID, setModalVisible }} />
     } else {
         return <DepartmentForm {...{ schoolID, departmentToEdit, setModalVisible }} />

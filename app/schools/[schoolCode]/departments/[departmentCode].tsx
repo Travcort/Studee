@@ -6,8 +6,7 @@ import CustomModal from "@/components/shared/CustomModal";
 import DetailField from "@/components/shared/DetailField";
 import IconButton from "@/components/shared/IconButton";
 import Personcard from "@/components/PersonCard";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { deleteDepartment } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import { DepartmentTypes } from "@/lib/Database/Schema";
@@ -16,12 +15,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Text, ToastAndroid, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CourseCard from "@/components/courses/Card";
 
 export default function Department() {
     const { departmentCode, departmentID } = useLocalSearchParams<{ departmentCode: string; departmentID: string }>();
     const router = useRouter();
     const { database } = useDatabase();
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
     
     const refreshSchoolDetailsToken = StateStore(state => state.refreshSchoolDetailsToken);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
@@ -45,6 +45,7 @@ export default function Department() {
     const [deleteOperation, setDeleteOperation] = useState(false);
     const [departmentHeadOperation, setDepartmentHeadOperation] = useState(false);
     const [lecturersOperation, setLecturersOperation] = useState(false);
+    const [coursesOperation, setCoursesOperation] = useState(false);
     const handleDelete = () => {
         (async () => {
             if(!departmentToEdit) {
@@ -67,19 +68,19 @@ export default function Department() {
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
             {department
                 ? (
                     <View style={{ gap: '2%', alignItems: 'center' }}>
                         <Card>
                             <View style={{ position: "relative", flexDirection: "row", alignItems: "center" }}>
-                                <Text style={{ fontSize: 20, fontWeight: "700", color: Colours[customTheme].inverseText }}>
+                                <Text style={{ fontSize: 20, fontWeight: "700", color: colours.inverseText }}>
                                     {department.name}
                                 </Text>
 
                                 <IconButton
                                     icon="account-edit"
-                                    iconColor={Colours[customTheme].inverseText}
+                                    iconColor={colours.inverseText}
                                     onPress={() =>  setModalVisible(true)}
                                     style={{
                                         position: "absolute",
@@ -90,17 +91,17 @@ export default function Department() {
                                 />
                             </View>
 
-                            <Text style={{ fontSize: 14, color: Colours[customTheme].placeholderText, marginTop: 4 }}>
+                            <Text style={{ fontSize: 14, color: colours.placeholderText, marginTop: 4 }}>
                                 Code: {department.code}
                             </Text>
 
-                            <Text style={{ fontSize: 13, color: Colours[customTheme].placeholderText }}>
+                            <Text style={{ fontSize: 13, color: colours.placeholderText }}>
                                 Established: {new Date(department.started).toLocaleDateString()}
                             </Text>
                         </Card>
 
                         <Card>
-                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                 The Department Head
                             </Text>
                             {department.head
@@ -121,7 +122,7 @@ export default function Department() {
                                 ) 
                                 : (
                                     <View>
-                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                             No Department Head Yet
                                         </Text>
 
@@ -132,7 +133,7 @@ export default function Department() {
                         </Card>
 
                         <Card>
-                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText }}>LECTURERS</Text>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText }}>LECTURERS</Text>
                             {department.lecturers.length > 0 
                                 ? (
                                     <FlatList  
@@ -152,7 +153,7 @@ export default function Department() {
                                 ) 
                                 : (
                                     <View>
-                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                             No Department Lecturers Yet
                                         </Text>
 
@@ -162,13 +163,45 @@ export default function Department() {
                             }
                         </Card>
 
-                        <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>
+                        <Card>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText }}>DEPARTMENTS</Text>
+                            {department.courses.length > 0 
+                                ? (
+                                    <FlatList  
+                                        contentContainerStyle={{ width: '95%', alignSelf: 'center' }}
+                                        data={department.courses}
+                                        keyExtractor={({ id }) => String(id)}
+                                        renderItem={({item}) => (
+                                            <CourseCard
+                                                id={item.id} 
+                                                schoolCode={schoolDetails?.code!} // Trust me Bro!! TODO: Come up with a better solution
+                                                departmentCode={item.code}
+                                                uniqueIdentifier={item.code}
+                                                name={item.name}
+                                            />
+                                        )}
+                                        ListFooterComponent={<Button onPress={() => {setCoursesOperation(true); setModalVisible(true);}}>Create New Course</Button>}
+                                    />
+                                ) 
+                                : (
+                                    <View>
+                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
+                                            No Courses Yet
+                                        </Text>
+
+                                        <Button onPress={() => {setCoursesOperation(true); setModalVisible(true);}}>Create Department</Button>
+                                    </View>
+                                )
+                            }
+                        </Card>
+
+                        <Button buttonColor="red" textColor={colours.text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>
                             Delete Department
                         </Button>
                     </View>
                 ) 
                 : (
-                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>
+                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>
                         {`Department ${departmentCode} does not exist!`}
                     </Text>
                 )
@@ -189,7 +222,7 @@ export default function Department() {
                         departmentName={department.name} 
                         {...{ schoolID, setModalVisible, 
                                 departmentToEdit, deleteOperation, setDeleteOperation, handleDelete, 
-                                departmentHeadOperation, lecturersOperation 
+                                departmentHeadOperation, lecturersOperation, coursesOperation 
                         }} 
                     />
                 }

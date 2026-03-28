@@ -1,21 +1,20 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, View, Text } from 'react-native';
-import Colours from '@/lib/Colours';
 import LottieView from 'lottie-react-native';
 import { useRef } from 'react';
 import Button from '@/components/shared/Button';
-import { useMyAppContext } from '@/lib/Context';
+import { useTheme } from '@/lib/Theme';
 
 export default function NotFoundScreen() {
-  const { customTheme } = useMyAppContext();
+  const { colours } = useTheme();
   const animation = useRef<LottieView>(null);
 
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={[styles.container, { backgroundColor: Colours[customTheme].background }]}>
-        <Text style={{ color: Colours[customTheme].text }}>You just got lost</Text>
-        <Text style={{ color: Colours[customTheme].text }}>It's time to rethink your life's choices</Text>
+      <View style={[styles.container, { backgroundColor: colours.background }]}>
+        <Text style={{ color: colours.text }}>You just got lost</Text>
+        <Text style={{ color: colours.text }}>It's time to rethink your life's choices</Text>
         <LottieView
             autoPlay
             ref={animation}
@@ -28,7 +27,7 @@ export default function NotFoundScreen() {
         />
 
         <Link href="/" style={styles.link} asChild>
-          <Button textColor={Colours[customTheme].inverseText} buttonColor={Colours[customTheme].inverseBackground} mode='contained'>
+          <Button textColor={colours.inverseText} buttonColor={colours.inverseBackground} mode='contained'>
             I wanna go home!
           </Button>
         </Link>

@@ -8,6 +8,7 @@ import {
     STUDENTS_TABLE, StudentTypes, NewStudentTypes
 } from './Schema';
 
+// MARK: SCHOOLS
 export const newSchool = async (db: SQLite.SQLiteDatabase, school: NewSchoolTypes) => {
     try {
         await db.runAsync(`INSERT OR IGNORE INTO ${SCHOOLS_TABLE} 
@@ -86,6 +87,7 @@ export const deleteSchool = async (db: SQLite.SQLiteDatabase, school: SchoolType
     }
 };
 
+// MARK: DEPARTMENTS
 export const newDepartment = async (db: SQLite.SQLiteDatabase, department: NewDepartmentTypes) => {
     try {
         const schoolID = department.schoolID;
@@ -176,6 +178,7 @@ export const deleteDepartment = async (db: SQLite.SQLiteDatabase, department: De
     }
 };
 
+// MARK: COURSES
 export const newCourse = async (db: SQLite.SQLiteDatabase, course: NewCourseTypes) => {
     try {
         await db.runAsync(`INSERT OR IGNORE INTO ${COURSES_TABLE} 
@@ -248,7 +251,7 @@ export const deleteCourse = async (db: SQLite.SQLiteDatabase, course: CourseType
     }
 };
 
-// UNITS
+// MARK: UNITS
 export const newUnit = async (db: SQLite.SQLiteDatabase, unit: NewUnitTypes) => {
     try {
         await db.runAsync(`INSERT OR IGNORE INTO ${UNITS_TABLE} 
@@ -321,7 +324,7 @@ export const deleteUnit = async (db: SQLite.SQLiteDatabase, unit: UnitTypes) => 
     }
 };
 
-// LECTURERS
+// MARK: LECTURERS
 export const newLecturer = async (db: SQLite.SQLiteDatabase, lecturer: NewLecturerTypes ) => {
     try {
         await db.runAsync(`INSERT OR IGNORE INTO ${LECTURERS_TABLE} 
@@ -414,7 +417,7 @@ export const deleteLecturer = async (db:SQLite.SQLiteDatabase, lecturer: Lecture
 };
 
 
-// STUDENTS
+// MARK: STUDENTS
 export const newStudent = async (db: SQLite.SQLiteDatabase, student: NewStudentTypes) => {
     try {
         if(!student.regNo || !student.fullName) {

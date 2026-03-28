@@ -1,5 +1,4 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { Link } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -11,7 +10,7 @@ type SchoolCardProps = {
 };
 
 export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonly<SchoolCardProps>) {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
 
     return (
         <Link
@@ -22,8 +21,8 @@ export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonl
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={{
-                    backgroundColor: Colours[customTheme].inverseBackground,
-                    borderRadius: customBorderRadius,
+                    backgroundColor: colours.inverseBackground,
+                    borderRadius: spacing.borderRadius,
                     margin: '1%',
                     paddingVertical: 16,
                     paddingHorizontal: 20,
@@ -39,7 +38,7 @@ export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonl
             >
                 <View
                     style={{
-                        backgroundColor: Colours[customTheme].background,
+                        backgroundColor: colours.background,
                         width: 34,
                         height: 34,
                         borderRadius: 99,
@@ -49,7 +48,7 @@ export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonl
                 >
                     <Text
                         style={{
-                            color: Colours[customTheme].text,
+                            color: colours.text,
                             fontWeight: "bold",
                             fontSize: 16,
                         }}
@@ -61,7 +60,7 @@ export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonl
                 <View style={{ flex: 1 }}>
                     <Text
                         style={{
-                            color: Colours[customTheme].inverseText,
+                            color: colours.inverseText,
                             fontSize: 17,
                             fontWeight: "600",
                         }}
@@ -71,7 +70,7 @@ export default function SchoolCard({ id, uniqueIdentifier, name, dean }: Readonl
                     </Text>
                     <Text
                         style={{
-                            color: Colours[customTheme].inverseText,
+                            color: colours.inverseText,
                             fontSize: 13,
                             marginTop: 3,
                         }}

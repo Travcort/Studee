@@ -1,8 +1,7 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import PhotoUploadInput from "../shared/PhotoUploadInput";
@@ -89,7 +88,7 @@ const formLabels: Record<keyof NewLecturerTypes, FormLabelType> = {
 };
 
 const LecturerForm = ({ departmentID, lecturerToEdit, setModalVisible }: { departmentID: number, lecturerToEdit?: LecturerTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
     const { database } = useDatabase();
     
     const schoolDetails = StateStore(state => state.schoolDetails);
@@ -188,25 +187,25 @@ const LecturerForm = ({ departmentID, lecturerToEdit, setModalVisible }: { depar
     }, [allLecturers]);
 
     return (
-        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
-            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Lecturer Enrollment</Text>
+        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: colours.inverseBackground} }>
+            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: colours.inverseText }}>Lecturer Enrollment</Text>
 
             {lecturerKeys
             .map(key => (
                 key === 'staffNo' 
                 ? (
-                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
-                        <IconButton icon={'school'} size={30} iconColor={Colours[customTheme].text}
-                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: spacing.borderRadius }]}>
+                        <IconButton icon={'school'} size={30} iconColor={colours.text}
+                            style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
                         />
 
                         <TextInput
                             style={[
                                 styles.input, 
                                 {
-                                    backgroundColor: Colours[customTheme].placeholderText, 
-                                    color: Colours[customTheme].inverseText,
-                                    borderRadius: customBorderRadius
+                                    backgroundColor: colours.placeholderText, 
+                                    color: colours.inverseText,
+                                    borderRadius: spacing.borderRadius
                                 }
                             ]}
                             value={lecturer.staffNo}
@@ -232,18 +231,18 @@ const LecturerForm = ({ departmentID, lecturerToEdit, setModalVisible }: { depar
                 )
                 : (key === 'departmentID')
                 ? (
-                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
-                        <IconButton icon={'school'} size={30} iconColor={Colours[customTheme].text}
-                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: spacing.borderRadius }]}>
+                        <IconButton icon={'school'} size={30} iconColor={colours.text}
+                            style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
                         />
 
                         <TextInput
                             style={[
                                 styles.input, 
                                 {
-                                    backgroundColor: Colours[customTheme].placeholderText, 
-                                    color: Colours[customTheme].inverseText,
-                                    borderRadius: customBorderRadius
+                                    backgroundColor: colours.placeholderText, 
+                                    color: colours.inverseText,
+                                    borderRadius: spacing.borderRadius
                                 }
                             ]}
                             value={schoolDetails?.departments.find(dep => dep.id === departmentID)?.name}
@@ -252,29 +251,29 @@ const LecturerForm = ({ departmentID, lecturerToEdit, setModalVisible }: { depar
                     </View>
                 )
                 : (
-                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
-                        <IconButton icon={formLabels[key].icon} size={30} iconColor={Colours[customTheme].text}
-                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: spacing.borderRadius }]}>
+                        <IconButton icon={formLabels[key].icon} size={30} iconColor={colours.text}
+                            style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
                         />
                         <TextInput
                             style={[
                                 styles.input, 
                                 {
-                                    color: Colours[customTheme].inverseText,
-                                    borderRadius: customBorderRadius
+                                    color: colours.inverseText,
+                                    borderRadius: spacing.borderRadius
                                 }
                             ]}
                             inputMode={formLabels[key].type}
                             placeholder={formLabels[key].label}
                             value={lecturer[key]}
                             onChangeText={(text) => handleChange(key, text)}
-                            placeholderTextColor={Colours[customTheme].placeholderText}
+                            placeholderTextColor={colours.placeholderText}
                         />
                     </View>
                 )
             ))}
 
-            <Button textColor={Colours[customTheme].text} buttonColor={Colours[customTheme].background} 
+            <Button textColor={colours.text} buttonColor={colours.background} 
                 onPress={handleEnrollment}
             >
                 {lecturerToEdit ? 'Update Lecturer Details' : 'Enroll Lecturer' }

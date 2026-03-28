@@ -1,11 +1,10 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { StudentTypes } from "@/lib/Database/Schema";
 import { Link } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
 
     return (
         <Link
@@ -16,8 +15,8 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={{
-                    backgroundColor: Colours[customTheme].inverseBackground,
-                    borderRadius: customBorderRadius,
+                    backgroundColor: colours.inverseBackground,
+                    borderRadius: spacing.borderRadius,
                     margin: '1%',
                     paddingVertical: 16,
                     paddingHorizontal: 20,
@@ -33,7 +32,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
             >
                 <View
                     style={{
-                        backgroundColor: Colours[customTheme].background ?? "#007AFF",
+                        backgroundColor: colours.background ?? "#007AFF",
                         width: 34,
                         height: 34,
                         borderRadius: 99,
@@ -43,7 +42,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                 >
                     <Text
                         style={{
-                            color: Colours[customTheme].text,
+                            color: colours.text,
                             fontWeight: "bold",
                             fontSize: 16,
                         }}
@@ -55,7 +54,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                 <View style={{ flex: 1 }}>
                     <Text
                         style={{
-                        color: Colours[customTheme].inverseText,
+                        color: colours.inverseText,
                         fontSize: 17,
                         fontWeight: "600",
                         }}
@@ -65,7 +64,7 @@ export default function Studentcard({ item}: Readonly<{ item: StudentTypes}>) {
                     </Text>
                     <Text
                         style={{
-                            color: Colours[customTheme].inverseText,
+                            color: colours.inverseText,
                             fontSize: 13,
                             marginTop: 3,
                         }}

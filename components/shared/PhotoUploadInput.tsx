@@ -2,9 +2,8 @@ import React from 'react';
 import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Colours from '@/lib/Colours';
-import { useMyAppContext } from '@/lib/Context';
 import IconButton from './IconButton';
+import { useTheme } from '@/lib/Theme';
 
 type PhotoUploadInputProps = {
   photoUri: string;
@@ -12,7 +11,7 @@ type PhotoUploadInputProps = {
 };
 
 const PhotoUploadInput: React.FC<PhotoUploadInputProps> = ({ photoUri, onChange }) => {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
 
     const pickImage = async () => {
         const result = await launchImageLibraryAsync({
@@ -25,7 +24,7 @@ const PhotoUploadInput: React.FC<PhotoUploadInputProps> = ({ photoUri, onChange 
     };
 
     return (
-        <TouchableOpacity style={[styles.container, { borderRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }]} onPress={pickImage} activeOpacity={0.8}>
+        <TouchableOpacity style={[styles.container, { borderRadius: spacing.borderRadius, backgroundColor: colours.background }]} onPress={pickImage} activeOpacity={0.8}>
         {photoUri 
             ? (
                 <View style={styles.imageContainer}>
@@ -33,11 +32,11 @@ const PhotoUploadInput: React.FC<PhotoUploadInputProps> = ({ photoUri, onChange 
                   <View style={styles.iconWrapper}>
                     <IconButton
                       icon="close-circle-outline"
-                      iconColor={Colours[customTheme].text}
+                      iconColor={colours.text}
                       size={20}
                       onPress={() => onChange('')}
                       style={{
-                        backgroundColor: Colours[customTheme].background,
+                        backgroundColor: colours.background,
                         borderRadius: 50,
                         elevation: 2,
                       }}
@@ -47,7 +46,7 @@ const PhotoUploadInput: React.FC<PhotoUploadInputProps> = ({ photoUri, onChange 
             ) 
             : (
                 <View style={styles.placeholder}>
-                    <MaterialCommunityIcons name="camera-plus" size={36} color={Colours[customTheme].placeholderText} />
+                    <MaterialCommunityIcons name="camera-plus" size={36} color={colours.placeholderText} />
                     <Text style={styles.placeholderText}>Upload Photo</Text>
                 </View>
             )

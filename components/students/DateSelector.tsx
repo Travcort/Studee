@@ -1,11 +1,11 @@
 import { Text, View } from "react-native";
 import DatePicker from 'react-native-date-picker'
 import IconButton from "../shared/IconButton";
-import { useMyAppContext } from "@/lib/Context";
-import Colours from "@/lib/Colours";
 import { useState } from "react";
 import Button from "../shared/Button";
 import { StudentTypes } from "@/lib/Database/Schema";
+import { useTheme } from "@/lib/Theme";
+import { useMyAppContext } from "@/lib/Context";
 
 type DateSelectorProps = {
     property: keyof StudentTypes;
@@ -16,7 +16,8 @@ type DateSelectorProps = {
 };
 
 const DateSelector: React.FC<DateSelectorProps> = ({ property, activeCalendar, toggleCalendarModal, handleChange, studentToEdit }) => {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { customTheme } = useMyAppContext();
+    const { colours, spacing } = useTheme();
 
     const [dateActive, setDateActive] = useState(!!studentToEdit);
     const [dobDate, setDobDate] = useState(studentToEdit?.dob ? new Date(studentToEdit.dob) : new Date());
@@ -27,9 +28,9 @@ const DateSelector: React.FC<DateSelectorProps> = ({ property, activeCalendar, t
     const setSelectedDate = property === "dob" ? setDobDate : setEnrollmentDate;
 
     return (
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%', borderRadius: customBorderRadius }}>
-            <IconButton icon="calendar-month" size={30} iconColor={Colours[customTheme].text}
-                style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%', borderRadius: spacing.borderRadius }}>
+            <IconButton icon="calendar-month" size={30} iconColor={colours.text}
+                style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
             /> 
             {activeCalendar === property
                 ? (
@@ -39,18 +40,18 @@ const DateSelector: React.FC<DateSelectorProps> = ({ property, activeCalendar, t
                             mode="date" date={selectedDate} 
                             onDateChange={(date) => {setSelectedDate(date); handleChange(property, date.toDateString())}} 
                         />
-                        <IconButton icon="check" iconColor={Colours[customTheme].inverseText} onPress={() => {setDateActive(true); toggleCalendarModal();}} />
+                        <IconButton icon="check" iconColor={colours.inverseText} onPress={() => {setDateActive(true); toggleCalendarModal();}} />
                     </View>
                 ) 
                 : dateActive
                 ? (
                     <View style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'space-around', alignItems: 'center' }}>
-                        <Text style={{ color: Colours[customTheme].inverseText }}>{selectedDate.toDateString()}</Text>
-                        <IconButton icon="alpha-x-box" iconColor={Colours[customTheme].inverseText} onPress={() => {setDateActive(false); toggleCalendarModal()}} />
+                        <Text style={{ color: colours.inverseText }}>{selectedDate.toDateString()}</Text>
+                        <IconButton icon="alpha-x-box" iconColor={colours.inverseText} onPress={() => {setDateActive(false); toggleCalendarModal()}} />
                     </View>
                 )
                 : (
-                    <Button buttonColor="transparent" textColor={Colours[customTheme].placeholderText} onPress={() => toggleCalendarModal()} >
+                    <Button buttonColor="transparent" textColor={colours.placeholderText} onPress={() => toggleCalendarModal()} >
                         {property === "dob" ? "Choose Date of Birth" : "Choose Enrollment Date"}
                     </Button>
                 )

@@ -1,8 +1,7 @@
 import CustomModal from "@/components/shared/CustomModal";
 import IconButton from "@/components/shared/IconButton";
 import StudentForm from "@/components/students/Form";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import StateStore from "@/lib/State";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
@@ -17,7 +16,7 @@ import PersonSectionCard from "@/components/PersonSectionCard";
 export default function Student() {
     const { regNo } = useLocalSearchParams();
     const router = useRouter();
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
     const { database } = useDatabase();
     const students = StateStore(state => state.students);
     const setStudents = StateStore(state => state.setStudents);
@@ -29,8 +28,8 @@ export default function Student() {
 
     if(!student) {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
-                <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
+                <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>
                     {`Student ${regNo} does not exist!`}
                 </Text>
             </SafeAreaView>
@@ -56,21 +55,21 @@ export default function Student() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                    <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: '5%', color: Colours[customTheme].text }}>
+                    <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: '5%', color: colours.text }}>
                         {student.fullName}
                     </Text>
                     <IconButton 
                         icon="account-edit"
-                        iconColor={Colours[customTheme].text}
+                        iconColor={colours.text}
                         onPress={() => setModalVisible(true)}
                     />
                 </View>
 
                 <Image source={{ uri: student.photoUri }} 
-                    style={{ borderRadius: customBorderRadius * 50, backgroundColor: Colours[customTheme].inverseBackground, height: 200, width: 200 }} 
+                    style={{ borderRadius: spacing.borderRadius * 50, backgroundColor: colours.inverseBackground, height: 200, width: 200 }} 
                 />
                 
                 <View style={{ padding: '4%', gap: 20 }}>
@@ -115,7 +114,7 @@ export default function Student() {
                     />
                 </View>
 
-                <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Student</Button>
+                <Button buttonColor="red" textColor={colours.text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Student</Button>
             </ScrollView>
 
             <CustomModal 

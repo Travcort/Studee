@@ -1,5 +1,4 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import React, { useState, useRef, useEffect } from "react";
 import { 
   View, 
@@ -23,7 +22,7 @@ type DropdownMenuProps = {
 };
 
 const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
-  const { customTheme, customBorderRadius } = useMyAppContext();
+  const { colours, spacing } = useTheme();
   const [visible, setVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,7 +40,7 @@ const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
   return (
     <View>
       {/* Trigger Button */}
-      <Pressable style={[styles.trigger, { borderRadius: customBorderRadius }]} onPress={toggleMenu}>
+      <Pressable style={[styles.trigger, { borderRadius: spacing.borderRadius }]} onPress={toggleMenu}>
         {trigger}
       </Pressable>
 
@@ -53,7 +52,7 @@ const DropdownMenu = ({ trigger, items }: DropdownMenuProps) => {
         onRequestClose={() => setVisible(false)}
       >
         <TouchableWithoutFeedback onPress={() => setVisible(false)}>
-          <View style={[styles.overlay, { backgroundColor: Colours[customTheme].overlay }]}>
+          <View style={[styles.overlay, { backgroundColor: colours.overlay }]}>
             <Animated.View
               style={[
                 styles.menu,

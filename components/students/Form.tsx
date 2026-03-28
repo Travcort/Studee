@@ -1,8 +1,7 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
 import { Dispatch, SetStateAction, useState } from "react";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import PhotoUploadInput from "../shared/PhotoUploadInput";
@@ -83,7 +82,7 @@ const formLabels: Record<keyof NewStudentTypes, FormLabelType> = {
 };
 
 const StudentForm = ({ studentToEdit, setModalVisible }: { studentToEdit?: StudentTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
     const { database } = useDatabase();
     const setStudents = StateStore(state => state.setStudents);
     const toggleRefreshMetricsToken = StateStore(state => state.toggleRefreshMetricsToken);
@@ -154,8 +153,8 @@ const StudentForm = ({ studentToEdit, setModalVisible }: { studentToEdit?: Stude
     };
 
     return (
-        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
-            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Student Enrollment</Text>
+        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: colours.inverseBackground} }>
+            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: colours.inverseText }}>Student Enrollment</Text>
 
             {studentKeys
             .filter((e) => !e.includes("regNo"))
@@ -177,31 +176,31 @@ const StudentForm = ({ studentToEdit, setModalVisible }: { studentToEdit?: Stude
                     />
                 )
                 : (
-                    <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
-                        <IconButton icon={formLabels[key].icon} size={30} iconColor={Colours[customTheme].text}
-                            style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                    <View key={key} style={[styles.inputWrapper, { borderRadius: spacing.borderRadius }]}>
+                        <IconButton icon={formLabels[key].icon} size={30} iconColor={colours.text}
+                            style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
                         />
                         <TextInput
                             style={[
                                 styles.input, 
                                 {
-                                    backgroundColor: studentToEdit && key === 'regNo' ? Colours[customTheme].placeholderText : 'none', 
-                                    color: Colours[customTheme].inverseText,
-                                    borderRadius: customBorderRadius
+                                    backgroundColor: studentToEdit && key === 'regNo' ? colours.placeholderText : 'none', 
+                                    color: colours.inverseText,
+                                    borderRadius: spacing.borderRadius
                                 }
                             ]}
                             inputMode={formLabels[key].type}
                             placeholder={formLabels[key].label}
                             value={student[key]}
                             onChangeText={(text) => handleChange(key, text)}
-                            placeholderTextColor={Colours[customTheme].placeholderText}
+                            placeholderTextColor={colours.placeholderText}
                             editable={!(studentToEdit && key === 'regNo')}
                         />
                     </View>
                 )
             ))}
 
-            <Button textColor={Colours[customTheme].text} buttonColor={Colours[customTheme].background} 
+            <Button textColor={colours.text} buttonColor={colours.background} 
                 onPress={handleEnrollment}
             >
                 {studentToEdit ? 'Update Student Details' : 'Enroll Student' }

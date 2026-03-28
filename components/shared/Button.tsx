@@ -1,4 +1,4 @@
-import { useMyAppContext } from '@/lib/Context';
+import { useTheme } from '@/lib/Theme';
 import React from 'react';
 import {
     GestureResponderEvent,
@@ -47,7 +47,7 @@ export default function Button({
     const border = mode === 'outlined' ? { borderWidth: 1, borderColor: textColor } : {};
     const textCol = mode === 'contained' ? textColor : buttonColor;
 
-    const { customBorderRadius } = useMyAppContext();
+    const { spacing } = useTheme();
 
     return (
       <Pressable
@@ -58,7 +58,7 @@ export default function Button({
         }}
         style={({ pressed }) => [
           styles.base,
-          { backgroundColor: disabled ? '#ccc' : background, borderRadius: customBorderRadius },
+          { backgroundColor: disabled ? '#ccc' : background, borderRadius: spacing.borderRadius },
           border,
           pressed && { opacity: Platform.OS === 'ios' ? 0.7 : 1 },
           style,

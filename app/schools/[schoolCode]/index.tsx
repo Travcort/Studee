@@ -1,7 +1,6 @@
 import CustomModal from "@/components/shared/CustomModal";
 import IconButton from "@/components/shared/IconButton";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import StateStore, { SchoolDetails } from "@/lib/State";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -19,7 +18,7 @@ import AllSchoolOperations from "@/components/schools/AllOperations";
 export default function School() {
     const { schoolCode, schoolID } = useLocalSearchParams<{ schoolCode: string; schoolID: string }>();
     const router = useRouter();
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
     const { database } = useDatabase();
 
     const [school, setSchool] = useState<SchoolDetails|null>(null);
@@ -61,19 +60,19 @@ export default function School() {
     }, [schoolDetailsToken]);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
             {school
                 ? (
                     <View style={{ gap: '2%', alignItems: 'center' }}>
                         <Card>
                             <View style={{ position: "relative", flexDirection: "row", alignItems: "center" }}>
-                                <Text style={{ fontSize: 20, fontWeight: "700", color: Colours[customTheme].inverseText }}>
+                                <Text style={{ fontSize: 20, fontWeight: "700", color: colours.inverseText }}>
                                     {school.name}
                                 </Text>
 
                                 <IconButton
                                     icon="account-edit"
-                                    iconColor={Colours[customTheme].inverseText}
+                                    iconColor={colours.inverseText}
                                     onPress={toggleModal}
                                     style={{
                                         position: "absolute",
@@ -84,17 +83,17 @@ export default function School() {
                                 />
                             </View>
 
-                            <Text style={{ fontSize: 14, color: Colours[customTheme].placeholderText, marginTop: 4 }}>
+                            <Text style={{ fontSize: 14, color: colours.placeholderText, marginTop: 4 }}>
                                 Code: {school.code}
                             </Text>
 
-                            <Text style={{ fontSize: 13, color: Colours[customTheme].placeholderText }}>
+                            <Text style={{ fontSize: 13, color: colours.placeholderText }}>
                                 Established: {new Date(school.started).toLocaleDateString()}
                             </Text>
                         </Card>
 
                         <Card>
-                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                 The Dean
                             </Text>
 
@@ -116,7 +115,7 @@ export default function School() {
                                 ) 
                                 : (
                                     <View>
-                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                             No Dean Yet
                                         </Text>
 
@@ -127,7 +126,7 @@ export default function School() {
                         </Card>
 
                         <Card>
-                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText }}>DEPARTMENTS</Text>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText }}>DEPARTMENTS</Text>
                             {school.departments.length > 0 
                                 ? (
                                     <FlatList  
@@ -148,7 +147,7 @@ export default function School() {
                                 ) 
                                 : (
                                     <View>
-                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: Colours[customTheme].inverseText, margin: '2%' }}>
+                                        <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText, margin: '2%' }}>
                                             No Departments Yet
                                         </Text>
 
@@ -158,11 +157,11 @@ export default function School() {
                             }
                         </Card>
 
-                        <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); toggleModal();}}>Delete School</Button>
+                        <Button buttonColor="red" textColor={colours.text} onPress={() => {setDeleteOperation(true); toggleModal();}}>Delete School</Button>
                     </View>
                 ) 
                 : (
-                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>
+                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>
                         {`School ${schoolCode} does not exist!`}
                     </Text>
                 )

@@ -1,5 +1,4 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { Text, View } from "react-native";
 import PersonDetailField from "./PersonDetailField";
 
@@ -12,11 +11,11 @@ type Props = {
 };
 
 export default function PersonSectionCard ({ heading, details }: Readonly<Props>) {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
 
     return (
         <View style={{
-            backgroundColor: Colours[customTheme].background,
+            backgroundColor: colours.background,
             borderRadius: 12,
             padding: 15,
             elevation: 2
@@ -25,7 +24,7 @@ export default function PersonSectionCard ({ heading, details }: Readonly<Props>
                 fontSize: 18,
                 fontWeight: '700',
                 marginBottom: 10,
-                color: Colours[customTheme].text
+                color: colours.text
             }}>
                 {heading}
             </Text>

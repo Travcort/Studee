@@ -1,22 +1,21 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function PersonDetailField({ label, value }: Readonly<{ label: string, value: string }>) {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
 
     return (
         <View style={styles.fieldContainer}>
-            <Text style={[styles.label, { color: Colours[customTheme].placeholderText }]}>
+            <Text style={[styles.label, { color: colours.placeholderText }]}>
                 {label}
             </Text>
             <TextInput
                 style={[
                     styles.input,
                     {
-                        borderRadius: customBorderRadius,
-                        backgroundColor: Colours[customTheme].inverseBackground,
-                        color: Colours[customTheme].inverseText,
+                        borderRadius: spacing.borderRadius,
+                        backgroundColor: colours.inverseBackground,
+                        color: colours.inverseText,
                     },
                 ]}
                 value={value}

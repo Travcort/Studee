@@ -1,7 +1,6 @@
 import CustomModal from "@/components/shared/CustomModal";
 import IconButton from "@/components/shared/IconButton";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import StateStore from "@/lib/State";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
@@ -17,7 +16,7 @@ import PersonSectionCard from "@/components/PersonSectionCard";
 export default function Lecturer() {
     const { staffNo } = useLocalSearchParams();
     const router = useRouter();
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
     const { database } = useDatabase();
     const lecturers = StateStore(state => state.lecturers);
     const setLecturers = StateStore(state => state.setLecturers);
@@ -29,13 +28,16 @@ export default function Lecturer() {
 
     if(!lecturer) {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
-                <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
+                <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>
                     {`Lecturer ${staffNo} does not exist!`}
                 </Text>
             </SafeAreaView>
         );
     }
+
+    const schoolDetails = StateStore(state => state.schoolDetails);
+    const department = schoolDetails?.departments.find(dep => dep.id === lecturer.departmentID);
 
     const handleDelete = () => {
         (async () => {
@@ -56,21 +58,21 @@ export default function Lecturer() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colours.background }}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems: 'center' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                    <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: '5%', color: Colours[customTheme].text }}>
+                    <Text style={{ fontSize: 22, fontWeight: "700", marginBottom: '5%', color: colours.text }}>
                         {lecturer.fullName}
                     </Text>
                     <IconButton 
                         icon="account-edit"
-                        iconColor={Colours[customTheme].text}
+                        iconColor={colours.text}
                         onPress={() => setModalVisible(true)}
                     />
                 </View>
 
                 <Image source={{ uri: lecturer.photoUri }} 
-                    style={{ borderRadius: customBorderRadius * 50, backgroundColor: Colours[customTheme].inverseBackground, height: 200, width: 200 }} 
+                    style={{ borderRadius: spacing.borderRadius * 50, backgroundColor: colours.inverseBackground, height: 200, width: 200 }} 
                 />
                 
                 <View style={{ padding: '4%', gap: 20 }}>
@@ -110,12 +112,20 @@ export default function Lecturer() {
                             {
                                 label: "Employment Date",
                                 value: lecturer.employmentDate
+                            },
+                            {
+                                label: "School",
+                                value: schoolDetails?.name ?? "Unknown"
+                            },
+                            {
+                                label: "Department",
+                                value: department?.name ?? "Unknown"
                             }
                         ]}
                     />
                 </View>
 
-                <Button buttonColor="red" textColor={Colours[customTheme].text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Lecturer</Button>
+                <Button buttonColor="red" textColor={colours.text} onPress={() => {setDeleteOperation(true); setModalVisible(true);}}>Delete Lecturer</Button>
             </ScrollView>
 
             <CustomModal 

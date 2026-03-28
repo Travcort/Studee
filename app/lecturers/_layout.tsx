@@ -4,6 +4,6 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-export default function TeachersLayout() {
+export default function LecturersLayout() {
   return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -1,20 +1,20 @@
+import { useMyAppContext } from '@/lib/Context';
+import { useTheme } from '@/lib/Theme';
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useRef } from 'react';
 import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  Animated,
-  Image,
-  Platform,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
-  ImageSourcePropType,
+    Animated,
+    Image,
+    ImageSourcePropType,
+    Platform,
+    Pressable,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextStyle,
+    View,
+    ViewStyle,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useMyAppContext } from '@/lib/Context';
-import Colours from '@/lib/Colours';
 
 export type ChipMode = 'flat' | 'outlined';
 
@@ -53,7 +53,8 @@ export default function Chip({
   accessibilityLabel,
   testID,
 }: Readonly<ChipProps>) {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { customBorderRadius } = useMyAppContext();
+    const { colours } = useTheme();
     const scale = useRef(new Animated.Value(1)).current;
 
     const startPress = () => {
@@ -83,7 +84,7 @@ export default function Chip({
                 onPress={disabled ? undefined : onPress}
                 style={({ pressed }) => [
                     containerStyle, 
-                    { backgroundColor: Colours[customTheme].inverseBackground, borderRadius: customBorderRadius }, 
+                    { backgroundColor: colours.inverseBackground, borderRadius: customBorderRadius }, 
                     pressed && Platform.OS === 'ios' && styles.pressed
                 ]}
                 disabled={disabled}
@@ -104,12 +105,12 @@ export default function Chip({
                     : null
                 }
 
-                <Text numberOfLines={lines ?? 1} style={[{ flexShrink: 1, fontSize: 14, color: Colours[customTheme].inverseText }, labelStyle]}>{label}</Text> 
+                <Text numberOfLines={lines ?? 1} style={[{ flexShrink: 1, fontSize: 14, color: colours.inverseText }, labelStyle]}>{label}</Text> 
 
                 {badge !== undefined && badge !== null 
                     ? (
-                        <View style={[styles.badgeWrap, { backgroundColor: Colours[customTheme].badge }]}>
-                            <Text style={{ color: Colours[customTheme].text, fontSize: 12, fontWeight: '600' }}>{String(badge)}</Text>
+                        <View style={[styles.badgeWrap, { backgroundColor: colours.badge }]}>
+                            <Text style={{ color: colours.text, fontSize: 12, fontWeight: '600' }}>{String(badge)}</Text>
                         </View>
                     ) 
                     : onClose 

@@ -2,21 +2,21 @@ import { useTheme } from "@/lib/Theme";
 import { Link } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
-type DepartmentCardProps = { 
+type CourseCardProps = { 
     id: number;
     schoolCode: string;
+    departmentCode: string;
     uniqueIdentifier: string;
     name: string;
-    head: string;
 };
 
-export default function DepartmentCard({ id, schoolCode, uniqueIdentifier, name, head }: Readonly<DepartmentCardProps>) {
+export default function CourseCard({ id, schoolCode, departmentCode, uniqueIdentifier, name }: Readonly<CourseCardProps>) {
     const { colours, spacing } = useTheme();
 
     return (
         <Link
             key={id}
-            href={`/schools/${schoolCode}/departments/${encodeURIComponent(uniqueIdentifier)}?departmentID=${id}`}
+            href={`/schools/${schoolCode}/departments/${departmentCode}/${encodeURIComponent(uniqueIdentifier)}?courseID=${id}`}
             asChild
         >
             <TouchableOpacity
@@ -69,7 +69,7 @@ export default function DepartmentCard({ id, schoolCode, uniqueIdentifier, name,
                     >
                         {name}
                     </Text>
-                    <Text
+                    {/* <Text
                         style={{
                             color: colours.text,
                             fontSize: 13,
@@ -77,7 +77,7 @@ export default function DepartmentCard({ id, schoolCode, uniqueIdentifier, name,
                         }}
                     >
                         Head: {head}
-                    </Text>
+                    </Text> */}
                 </View>
             </TouchableOpacity>
         </Link>

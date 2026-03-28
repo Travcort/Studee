@@ -1,6 +1,5 @@
 import Chip from "@/components/shared/Chip";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { getAllDepartmentsCount, getAllLecturers, getAllSchools, getAllStudents } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
@@ -10,7 +9,7 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomePage () {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
     const { database } = useDatabase();
     const router = useRouter();
     const refreshMetricsToken = StateStore(state => state.refreshMetricsToken);
@@ -33,7 +32,7 @@ export default function HomePage () {
     }, [refreshMetricsToken]);
 
     return (
-      <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: Colours[customTheme].background }}>
+      <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: colours.background }}>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap',  justifyContent: 'space-between', alignItems: 'center', gap: '2%' }}>
           <Chip label="Schools" lines={2} badge={metrics.schools} onPress={() => router.navigate('/schools')} />
           <Chip label="Departments" lines={2} badge={metrics.departments} onPress={() => router.navigate('/schools')} />

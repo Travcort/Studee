@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 
 const DialogContent = ({
   title,
@@ -11,15 +10,15 @@ const DialogContent = ({
   message?: string;
   actions?: { label: string; onPress: () => void; mode?: "text" | "contained" }[];
 }) => {
-  const { customTheme, customBorderRadius } = useMyAppContext();
+  const { colours, spacing } = useTheme();
 
   return (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: Colours[customTheme].inverseBackground,
-          borderRadius: customBorderRadius * 2,
+          backgroundColor: colours.inverseBackground,
+          borderRadius: spacing.borderRadius * 2,
         },
       ]}
     >
@@ -27,7 +26,7 @@ const DialogContent = ({
       <Text
         style={[
           styles.title,
-          { color: Colours[customTheme].inverseText },
+          { color: colours.inverseText },
         ]}
       >
         {title}
@@ -38,7 +37,7 @@ const DialogContent = ({
         <Text
           style={[
             styles.message,
-            { color: Colours[customTheme].inverseText },
+            { color: colours.inverseText },
           ]}
         >
           {message}
@@ -56,7 +55,7 @@ const DialogContent = ({
               {
                 backgroundColor:
                   action.mode === "contained"
-                    ? Colours[customTheme].background
+                    ? colours.background
                     : "transparent",
                 opacity: pressed ? 0.8 : 1,
               },
@@ -66,8 +65,8 @@ const DialogContent = ({
               style={{
                 color:
                   action.mode === "contained"
-                    ? Colours[customTheme].text
-                    : Colours[customTheme].inverseText,
+                    ? colours.text
+                    : colours.inverseText,
                 fontWeight: "600",
               }}
             >

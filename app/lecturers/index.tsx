@@ -1,5 +1,4 @@
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { getAllLecturers } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
@@ -10,7 +9,7 @@ import { LecturerTypes } from "@/lib/Database/Schema";
 import Personcard from "@/components/PersonCard";
 
 export default function LecturersPage() {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
     const { database } = useDatabase();
     const lecturers = StateStore(state => state.lecturers);
     const setLecturers = StateStore(state => state.setLecturers);
@@ -27,7 +26,7 @@ export default function LecturersPage() {
     }, []);
 
     return (
-        <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: colours.background }}>
             {lecturers?.length > 0
                 ? (
                     <FlatList  
@@ -44,7 +43,7 @@ export default function LecturersPage() {
                     />
                 ) 
                 : (
-                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>No Lecturers Currently Enrolled</Text>
+                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>No Lecturers Currently Enrolled</Text>
                 )
             }
         </SafeAreaView>

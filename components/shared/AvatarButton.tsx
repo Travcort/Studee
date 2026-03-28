@@ -1,10 +1,9 @@
-import Colours from '@/lib/Colours';
-import { useMyAppContext } from '@/lib/Context';
+import { useTheme } from '@/lib/Theme';
 import { Dispatch, SetStateAction } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function AvatarButton({ setOpen }: Readonly<{ setOpen: Dispatch<SetStateAction<boolean>>}>) {
-  const { customTheme } = useMyAppContext();
+  const { colours } = useTheme();
 
   return (
     <TouchableOpacity
@@ -15,10 +14,10 @@ export default function AvatarButton({ setOpen }: Readonly<{ setOpen: Dispatch<S
       <View
         style={[
           styles.avatar,
-          { backgroundColor: Colours[customTheme].inverseBackground },
+          { backgroundColor: colours.inverseBackground },
         ]}
       >
-        <Text style={{ color: Colours[customTheme].inverseText }}>A</Text>
+        <Text style={{ color: colours.inverseText }}>A</Text>
       </View>
     </TouchableOpacity>
   );

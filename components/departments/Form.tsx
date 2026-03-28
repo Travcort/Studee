@@ -1,8 +1,7 @@
 import { ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from "react-native";
 import Button from "../shared/Button";
 import { Dispatch, SetStateAction, useState } from "react";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import IconButton from "../shared/IconButton";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { editDepartmentDetails, getAllDepartments, newDepartment } from "@/lib/Database/Operations";
@@ -58,7 +57,7 @@ const formLabels: Record<keyof NewDepartmentTypes, FormLabelType> = {
 };
 
 const DepartmentForm = ({ schoolID, departmentToEdit, setModalVisible }: { schoolID: number, departmentToEdit?: DepartmentTypes, setModalVisible: Dispatch<SetStateAction<boolean>> }) => {
-    const { customTheme, customBorderRadius } = useMyAppContext();
+    const { colours, spacing } = useTheme();
     const { database } = useDatabase();
     const stateLecturers = StateStore(state => state.lecturers);
     const setStateDepartments = StateStore(state => state.setDepartments);
@@ -109,31 +108,31 @@ const DepartmentForm = ({ schoolID, departmentToEdit, setModalVisible }: { schoo
     };
 
     return (
-        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: Colours[customTheme].inverseBackground} }>
-            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: Colours[customTheme].inverseText }}>Department Form</Text>
+        <ScrollView contentContainerStyle={{ padding: '5%', backgroundColor: colours.inverseBackground} }>
+            <Text style={{ alignSelf: 'center', padding: '2%', fontSize: 24, fontWeight: 'bold', color: colours.inverseText }}>Department Form</Text>
 
             {departmentKeys
             .filter((key) => key !== "schoolID")
             .map(key => (
-                <View key={key} style={[styles.inputWrapper, { borderRadius: customBorderRadius }]}>
-                    <IconButton icon={formLabels[key].icon} size={30} iconColor={Colours[customTheme].text}
-                        style={{ borderTopLeftRadius: customBorderRadius, borderBottomLeftRadius: customBorderRadius, backgroundColor: Colours[customTheme].background }} 
+                <View key={key} style={[styles.inputWrapper, { borderRadius: spacing.borderRadius }]}>
+                    <IconButton icon={formLabels[key].icon} size={30} iconColor={colours.text}
+                        style={{ borderTopLeftRadius: spacing.borderRadius, borderBottomLeftRadius: spacing.borderRadius, backgroundColor: colours.background }} 
                     />
                     {key === "headID" 
                         ? (
                             department.headID 
                             ? (
                                 <View style={{ flexDirection: 'row', flexGrow: 1, justifyContent: 'space-around', alignItems: 'center' }}>
-                                    <Text style={{ color: Colours[customTheme].inverseText }}>{stateLecturers[department.headID].fullName}</Text>
-                                    <IconButton icon="alpha-x-box" iconColor={Colours[customTheme].inverseText} onPress={() => handleChange(key, null)} />
+                                    <Text style={{ color: colours.inverseText }}>{stateLecturers[department.headID].fullName}</Text>
+                                    <IconButton icon="alpha-x-box" iconColor={colours.inverseText} onPress={() => handleChange(key, null)} />
                                 </View>
                             )
                             : (
                                 <DropdownMenu
                                     trigger={() => (
                                         <View style={{ width: '90%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                                            <Text style={{ fontSize: 16, color: Colours[customTheme].placeholderText }}>School Dean</Text>
-                                            <MaterialCommunityIcons name="arrow-expand-down" size={28} color={Colours[customTheme].placeholderText } />
+                                            <Text style={{ fontSize: 16, color: colours.placeholderText }}>School Dean</Text>
+                                            <MaterialCommunityIcons name="arrow-expand-down" size={28} color={colours.placeholderText } />
                                         </View>
                                     )}
                                     items={stateLecturers.length > 0 
@@ -153,8 +152,8 @@ const DepartmentForm = ({ schoolID, departmentToEdit, setModalVisible }: { schoo
                                 style={[
                                     styles.input, 
                                     {
-                                        color: Colours[customTheme].inverseText,
-                                        borderRadius: customBorderRadius
+                                        color: colours.inverseText,
+                                        borderRadius: spacing.borderRadius
                                     }
                                 ]}
                                 inputMode={formLabels[key].type}
@@ -162,14 +161,14 @@ const DepartmentForm = ({ schoolID, departmentToEdit, setModalVisible }: { schoo
                                 placeholder={formLabels[key].label}
                                 value={department[key]}
                                 onChangeText={(text) => handleChange(key, text)}
-                                placeholderTextColor={Colours[customTheme].placeholderText}
+                                placeholderTextColor={colours.placeholderText}
                             />
                         )
                     }
                 </View>
             ))}
 
-            <Button textColor={Colours[customTheme].text} buttonColor={Colours[customTheme].background} 
+            <Button textColor={colours.text} buttonColor={colours.background} 
                 onPress={handleEnrollment}
             >
                 {departmentToEdit ? 'Update Department Details' : 'Create Department' }

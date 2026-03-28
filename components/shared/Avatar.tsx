@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 
 type AvatarProps = {
   uri?: string | null;
@@ -10,7 +9,7 @@ type AvatarProps = {
 };
 
 const Avatar: React.FC<AvatarProps> = ({ uri, name, size = 64 }) => {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
 
     const getInitials = (fullName: string) => {
         const parts = fullName.trim().split(" ");
@@ -27,7 +26,7 @@ const Avatar: React.FC<AvatarProps> = ({ uri, name, size = 64 }) => {
                 overflow: "hidden",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: Colours[customTheme].background,
+                backgroundColor: colours.background,
             }}
         >
         {uri 
@@ -41,7 +40,7 @@ const Avatar: React.FC<AvatarProps> = ({ uri, name, size = 64 }) => {
             : (
                 <Text
                     style={{
-                        color: Colours[customTheme].text,
+                        color: colours.text,
                         fontSize: size / 2.5,
                         fontWeight: "700",
                     }}

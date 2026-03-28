@@ -1,7 +1,6 @@
 import CustomModal from "@/components/shared/CustomModal";
 import FloatingActionButton from "@/components/shared/Fab";
-import Colours from "@/lib/Colours";
-import { useMyAppContext } from "@/lib/Context";
+import { useTheme } from "@/lib/Theme";
 import { getAllSchools } from "@/lib/Database/Operations";
 import { useDatabase } from "@/lib/Database/Provider";
 import StateStore from "@/lib/State";
@@ -13,7 +12,7 @@ import SchoolCard from "@/components/schools/Card";
 import SchoolForm from "@/components/schools/Form";
 
 export default function SchoolsPage() {
-    const { customTheme } = useMyAppContext();
+    const { colours } = useTheme();
     const { database } = useDatabase();
     const stateSchools = StateStore(state => state.schools);
     const setStateSchools = StateStore(state => state.setSchools);
@@ -42,7 +41,7 @@ export default function SchoolsPage() {
     }, []);
 
     return (
-        <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: Colours[customTheme].background }}>
+        <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: colours.background }}>
             {stateSchools?.length > 0
                 ? (
                     <FlatList  
@@ -59,7 +58,7 @@ export default function SchoolsPage() {
                     />
                 ) 
                 : (
-                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: Colours[customTheme].text }}>No School Has Been Established Yet</Text>
+                    <Text style={{ alignSelf: 'center', marginTop: '80%', fontSize: 18, fontWeight: 'bold', color: colours.text }}>No School Has Been Established Yet</Text>
                 )
             }
 
@@ -72,8 +71,8 @@ export default function SchoolsPage() {
             </CustomModal>
 
             <FloatingActionButton 
-                backgroundColor={Colours[customTheme].inverseBackground}
-                color={Colours[customTheme].inverseText} 
+                backgroundColor={colours.inverseBackground}
+                color={colours.inverseText} 
                 onPress={() => toggleModal()} 
             />
         </SafeAreaView>
