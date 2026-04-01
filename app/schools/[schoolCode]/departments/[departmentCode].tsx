@@ -164,7 +164,7 @@ export default function Department() {
                         </Card>
 
                         <Card>
-                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText }}>DEPARTMENTS</Text>
+                            <Text style={{ alignSelf: 'center', fontSize: 18, fontWeight: "600", color: colours.inverseText }}>COURSES</Text>
                             {department.courses.length > 0 
                                 ? (
                                     <FlatList  
@@ -189,7 +189,7 @@ export default function Department() {
                                             No Courses Yet
                                         </Text>
 
-                                        <Button onPress={() => {setCoursesOperation(true); setModalVisible(true);}}>Create Department</Button>
+                                        <Button onPress={() => {setCoursesOperation(true); setModalVisible(true);}}>Create Course</Button>
                                     </View>
                                 )
                             }

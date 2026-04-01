@@ -4,6 +4,7 @@ import DepartmentForm from "./Form";
 import { DepartmentTypes } from "@/lib/Database/Schema";
 import LecturerForm from "../lecturers/Form";
 import LecturersList from "../lecturers/List";
+import CourseForm from "../courses/Form";
 
 type AllDepartmentOperationsProps = {
     schoolID: number;
@@ -42,8 +43,7 @@ export default function AllDepartmentOperations ({
     } else if (lecturersOperation) {
         return <LecturerForm {...{ departmentID, setModalVisible }} />
     } else if (coursesOperation) {
-        // TODO: Create a Courses Form
-        return <LecturerForm {...{ departmentID, setModalVisible }} />
+        return <CourseForm {...{ schoolID, departmentID, setModalVisible }} />
     } else {
         return <DepartmentForm {...{ schoolID, departmentToEdit, setModalVisible }} />
     }

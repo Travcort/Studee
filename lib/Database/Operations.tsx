@@ -223,7 +223,7 @@ export const getCourse = async (db: SQLite.SQLiteDatabase, courseID: number) => 
     }
 };
 
-export const editCourse = async (db: SQLite.SQLiteDatabase, course: CourseTypes) => {
+export const editCourseDetails = async (db: SQLite.SQLiteDatabase, course: CourseTypes) => {
     try {
         await db.runAsync(`UPDATE ${COURSES_TABLE} 
             SET name = (?), code = (?), schoolID = (?), departmentID = (?) 
