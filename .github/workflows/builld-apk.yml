@@ -17,12 +17,12 @@ jobs:
 
         steps:
             - name: Checkout Code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Set up Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
-                node-version: 20
+                node-version: 24
 
             - name: Install Dependencies
               run: npm install
@@ -31,7 +31,7 @@ jobs:
               run: npx expo prebuild --platform android --no-install --clean
 
             - name: Cache Gradle Wrapper
-              uses: actions/cache@v3
+              uses: actions/cache@v5
               with:
                   path: ~/.gradle/wrapper
                   key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
@@ -39,7 +39,7 @@ jobs:
                     ${{ runner.os }}-gradle-wrapper-
 
             - name: Cache Gradle Dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v5
               with:
                   path: ~/.gradle/caches
                   key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
@@ -54,8 +54,9 @@ jobs:
                 cd android && ./gradlew clean && ./gradlew assembleRelease -x lintVitalAnalyzeRelease -x lintVitalRelease
                     
             - name: Upload APK to GitHub Release
-              uses: softprops/action-gh-release@v2
-              with:
-                files: android/app/build/outputs/apk/release/app-release.apk
+              run: |
+                gh release upload "${{ github.event.release.tag_name }}" \
+                  android/app/build/outputs/apk/release/app-release.apk
+                  --clobber
               env:
                 GITHUB_TOKEN: ${{ secrets.STUDEE_RELEASE_PLEASE_TOKEN }}
