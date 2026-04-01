@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.1](https://github.com/Travcort/Studee/compare/v1.1.0...v1.1.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* **action:** updated the build-apk action runner to Node 24 ([7d5f005](https://github.com/Travcort/Studee/commit/7d5f005d74f0461d3a8c3ef762348a30eca0f0e4))
+* added more details to Lecturer's profile ([7237fd3](https://github.com/Travcort/Studee/commit/7237fd3d5d712177bff767fd2646214ffe2aefe4))
+* centralized enrollment operations for lecturers ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* changed handling of theming app wide ([7237fd3](https://github.com/Travcort/Studee/commit/7237fd3d5d712177bff767fd2646214ffe2aefe4))
+* corrected Lecturer enrollment ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* corrected modal triggering to implicit triggers ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* corrected schema for both Lecturers and Students for the name's columns ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* moved forms to appropriate component folders ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* sectionalized person details for both Lecturers and Students ([e429d55](https://github.com/Travcort/Studee/commit/e429d55da36e9c8ca91b74c1c2d6f507810fe509))
+* **WIP:** courses set up ([aff5649](https://github.com/Travcort/Studee/commit/aff5649d86fce729047642784168874880261c16))
+* **WIP:** started work on courses set up ([7237fd3](https://github.com/Travcort/Studee/commit/7237fd3d5d712177bff767fd2646214ffe2aefe4))
+
 ## [1.1.0](https://github.com/Travcort/Studee/compare/v1.0.0...v1.1.0) (2025-11-06)
 
 
